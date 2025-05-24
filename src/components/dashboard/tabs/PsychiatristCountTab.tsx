@@ -65,6 +65,35 @@ const PsychiatristCountTab = () => {
               )}
             </CardContent>
           </Card>
+            // <Card
+            //             key={index}
+            //             className="bg-gradient-to-br from-teal-50 to-white border-2 border-teal-200 shadow-lg rounded-xl transition-all duration-500 transform hover:scale-105 hover:shadow-xl h-40"
+            //             style={{ transitionDelay: `${item.delay}ms` }}
+            //           >
+            //             <CardHeader className="flex flex-row items-center justify-between pb-2">
+            //               <CardTitle className="text-sm font-bold text-teal-800">
+            //                 {item.key}
+            //               </CardTitle>
+            //               <div className="p-3 bg-teal-100 rounded-full">
+            //                 <IconComponent className="h-8 w-8 text-teal-600" />
+            //               </div>
+            //             </CardHeader>
+            //             <CardContent>
+            //               <div className="text-3xl font-bold text-gray-800 mb-1">{item.value}</div>
+            //               {isLastItem && (
+            //                 <div className="flex justify-end mb-24">
+            //                   <button
+            //                     // onClick={() => navigate('/patient-enquiry')}
+            //                       onClick={() => navigate('/patient-enquiry')}
+            //                     className="flex items-center gap-2 px-2 py-0  text-white rounded-lg transition-colors "
+            //                   >
+            //                     <span>Details</span>
+            //                     <ArrowRight className="h-5 w-5 text-teal-700" />
+            //                   </button>
+            //                 </div>
+            //               )}
+            //             </CardContent>
+            //           </Card>
         );
       })}
     </div>

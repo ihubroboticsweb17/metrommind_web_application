@@ -624,7 +624,7 @@ const PsychiatristDashboard = () => {
       <div className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <DashboardHeader title="Psychiatrist Dashboard" />
 
-        <Dialog open={isDialogOpen} onOpenChange={() => setIsDialogOpen(false)}>
+        {/* <Dialog open={isDialogOpen} onOpenChange={() => setIsDialogOpen(false)}>
           <DialogContent>
             <DialogHeader className="bg-teal-50 border-b border-teal-100 p-4  ">
               <DialogTitle className="text-center  text-teal-800 ">
@@ -656,9 +656,9 @@ const PsychiatristDashboard = () => {
             </DialogHeader>
             <AddMedicineFreqTab />
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
         <Tabs defaultValue="patients" className="space-y-6">
-          <TabsList className="dark:bg-metro-dark-highlight bg-white p-1 rounded-xl shadow-sm border border-green-100">
+          <TabsList className="dark:bg-metro-dark-highlight bg-white p-1 rounded-xl shadow-sm border border-green-100 gap-1">
             <TabsTrigger
               value="patients"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg  transition-all duration-200 hover:shadow-lg hover:scale-105"
@@ -693,7 +693,7 @@ const PsychiatristDashboard = () => {
 
           <TabsContent value="patients" className="space-y-4">
             <PsychiatristCountTab />
-            <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white transition-all duration-200 hover:shadow-lg hover:scale-105 ">
+            <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white  ">
               <CardHeader className="bg-teal-50 border-b border-teal-100">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-teal-800 flex items-center gap-2">
@@ -705,18 +705,19 @@ const PsychiatristDashboard = () => {
                   </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="pt-4 px-3 md:px-6">
                 {loading ? (
                   <Skeleton className="h-12 w-full bg-teal-100" />
                 ) : (
                   <div className="rounded-md">
+               
                     <div className="grid grid-cols-6 bg-teal-50 p-3 text-sm font-medium text-teal-800">
                       <div>Name</div>
                       <div>Email</div>
                       <div>Patient Id</div>
                       <div>Phone</div>
                       <div></div>
-                      <div>Action</div>
+                      <div className="text-center">Action</div>
                     </div>
                     <div className="divide-y dark:divide-metro-dark-border/50 divide-teal-100">
                       {assignments.map((item) => (
@@ -737,7 +738,7 @@ const PsychiatristDashboard = () => {
                             {item.patient.mobile_number}
                           </div>
                           <div></div>
-                          <div className="text-right">
+                          <div className="text-center">
                             <Button
                               variant="outline"
                               size="sm"
@@ -757,6 +758,7 @@ const PsychiatristDashboard = () => {
                         </div>
                       ))}
                     </div>
+              
                   </div>
                 )}
               </CardContent>
@@ -829,7 +831,7 @@ const PsychiatristDashboard = () => {
           
           <TabsContent value="medicine" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Dialog>
+              {/* <Dialog>
                 <Card className="border-teal-100 shadow-sm overflow-hidden bg-white col-span-3 md:col-span-1">
                   <CardHeader className="bg-teal-50 border-b border-teal-100">
                     <CardTitle className="text-teal-800 flex items-center justify-between">
@@ -891,9 +893,9 @@ const PsychiatristDashboard = () => {
                   </DialogHeader>
                   <AddMedicineBrandTab />
                 </DialogContent>
-              </Dialog>
+              </Dialog> */}
 
-              <Dialog>
+              {/* <Dialog>
                 <Card className="border-teal-100 shadow-sm overflow-hidden bg-white col-span-3 md:col-span-1">
                   <CardHeader className="bg-teal-50 border-b border-teal-100">
                     <CardTitle className="text-teal-800 flex items-center justify-between">
@@ -923,7 +925,7 @@ const PsychiatristDashboard = () => {
                   </DialogHeader>
                   <AddMedicineFreqTab />
                 </DialogContent>
-              </Dialog>
+              </Dialog> */}
             </div>
           </TabsContent>
         </Tabs>

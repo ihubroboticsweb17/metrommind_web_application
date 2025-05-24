@@ -119,7 +119,7 @@ const JunpsychologistDashboard = () => {
                       </Dialog>
 
         <Tabs defaultValue="Overview" className="space-y-7">
-          <TabsList className="dark:bg-metro-dark-highlight bg-white p-1 rounded-xl shadow-sm border border-teal-100">
+          <TabsList className="dark:bg-metro-dark-highlight bg-white p-1 rounded-xl shadow-sm border border-teal-100 gap-2">
             <TabsTrigger
               value="Overview"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg"
@@ -207,17 +207,7 @@ const JunpsychologistDashboard = () => {
           </TabsContent>
           <TabsContent value="Patientlist" className="space-y-6">
             <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white">
-              <CardHeader className="bg-teal-50 border-b border-teal-100">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-green-800 flex items-center gap-2">
-                    Patient List
-                    <Sparkles className="h-4 w-4 text-green-500" />
-                  </CardTitle>
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    {/* {patients.length} Active Patients */}
-                  </Badge>
-                </div>
-              </CardHeader>
+    
               <CardContent className="p-0 ">
                 <PatientListTab />
               </CardContent>
