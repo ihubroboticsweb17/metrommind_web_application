@@ -1,0 +1,253 @@
+#root {
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+}
+
+/* Dark theme specific styles */
+.dark body {
+  background-color: #070314;
+  color: #ffffff;
+}
+
+.dark-gradient {
+  background: linear-gradient(to right, #070314, #130a2a);
+}
+
+.neon-text {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(157, 78, 221, 0.6);
+}
+
+.neon-border {
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  box-shadow: 0 0 12px rgba(157, 78, 221, 0.25);
+}
+
+.dark-card {
+  background-color: #0c0621;
+  border: 1px solid rgba(157, 78, 221, 0.1);
+  border-radius: 0.75rem;
+}
+
+.glass-blur {
+  backdrop-filter: blur(16px);
+  background-color: rgba(10, 3, 27, 0.5);
+  border: 1px solid rgba(157, 78, 221, 0.1);
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(157, 78, 221, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(157, 78, 221, 0.7);
+  }
+}
+
+.neon-pulse {
+  animation: neon-pulse 2s infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #9d4edd, #c77dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(157, 78, 221, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shimmer 6s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* New Theme Colors */
+.theme-royal {
+  --theme-primary: #3aedde;
+  --theme-secondary: #C4B5FD;
+  --theme-accent: #4C1D95;
+  --theme-background: #170e30;
+  --theme-foreground: #ffffff;
+  --theme-card: #221441;
+  --theme-border: rgba(124, 58, 237, 0.2);
+}
+
+.theme-ocean {
+  --theme-primary: #51C2B9;
+  --theme-secondary: #BAE6FD;
+  --theme-accent: #0369A1;
+  --theme-background: #0f172a;
+  --theme-foreground: #f8fafc;
+  --theme-card: #1e293b;
+  --theme-border: rgba(14, 165, 233, 0.2);
+}
+
+.theme-emerald {
+  --theme-primary: #51C2B9;
+  --theme-secondary: #A7F3D0;
+  --theme-accent: #27e7d7;
+  --theme-background: #082f2f;
+  --theme-foreground: #f8fafc;
+  --theme-card: #134e4a;
+  --theme-border: rgba(16, 185, 129, 0.2);
+}
+
+.theme-sunset {
+  --theme-primary: #F97316;
+  --theme-secondary: #FFEDD5;
+  --theme-accent: #C2410C;
+  --theme-background: #27151a;
+  --theme-foreground: #ffffff;
+  --theme-card: #3a1c20;
+  --theme-border: rgba(249, 115, 22, 0.2);
+}
+
+.theme-pink {
+  --theme-primary: #EC4899;
+  --theme-secondary: #FCE7F3;
+  --theme-accent: #DB2777;
+  --theme-background: #2d1c2d;
+  --theme-foreground: #ffffff;
+  --theme-card: #441f43;
+  --theme-border: rgba(236, 72, 153, 0.2);
+}
+
+.theme-green {
+  --theme-primary: #51C2B9;
+  --theme-secondary: #edf7f0;
+  --theme-accent: #51C2B9;
+  --theme-background: #ffffff;
+  --theme-foreground: #333333;
+  --theme-card: #f0f9f4;
+  --theme-border: rgba(46, 204, 113, 0.2);
+}
+.theme-aqua {
+  --theme-primary: #51C2B9;
+  --theme-secondary: #edf7f0;
+  --theme-accent: #51C2B9;
+  --theme-background: #ffffff;
+  --theme-foreground: #333333;
+  --theme-card: #f0f9f4;
+  --theme-border: rgba(46, 204, 113, 0.2);
+
+  /* Add more custom variables as needed */
+}
+/* Add enhanced green-specific styles */
+.green-gradient {
+  background: linear-gradient(135deg, #51C2B9, #51C2B9);
+}
+
+.green-soft-gradient {
+  background: linear-gradient(135deg, #f0f9f4, #e0f0e9);
+}
+
+.green-glow {
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}
+
+.shadow-green-glow {
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.25);
+}
+
+.green-border {
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.green-text {
+  color: #51C2B9;
+}
+
+/* Apply theme classes */
+.theme-card {
+  background-color: var(--theme-card);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-gradient-text {
+  background: linear-gradient(90deg, var(--theme-primary), var(--theme-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.theme-button {
+  background-color: var(--theme-primary);
+  color: var(--theme-foreground);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.theme-button:hover {
+  background-color: var(--theme-accent);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
+.chatbot-wrapper .react-chatbot-kit-chat-container {
+  padding: 20px; /* Adds spacing inside the chatbot */
+}
+
+.chatbot-wrapper .react-chatbot-kit-chat-message {
+  padding: 1px; /* Increases padding inside individual messages */
+}
+/* Increase chatbot container width */
+.chat-container {
+  width: 600px; /* Adjust the width as needed */
+  max-width: 80%; /* Ensures it remains responsive */
+  height: 500px; /* Adjust height if needed */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: auto; /* Center the chatbot */
+  padding: 10px;
+}
+
+/* Adjust the chat messages area */
+.chat-messages {
+  width: 100%;
+  height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Adjust the input field width */
+.chat-input {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.carousel-items::-webkit-scrollbar {
+  display: none;
+}
+.carousel-items {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}

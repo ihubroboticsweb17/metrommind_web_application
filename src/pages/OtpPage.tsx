@@ -1,0 +1,145 @@
+// import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/App";
+import LoginBackground from "@/components/login/LoginBackground";
+import { VerifyOtp } from "@/models/auth";
+import Logo from "/image/logo.png";
+import OtpForm from "@/components/Otp/OtpForm";
+import { useEffect, useState } from "react";
+import Ani from "../assets/json/logoAni.json";
+import Lottie from "lottie-react";
+const OtpPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { theme } = useTheme();
+  const [otpNo, setOtpNo] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+  // Get phone data from localStorage
+  const [phone, setPhone] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
+  const [fullPhone, setFullPhone] = useState("");
+
+  useEffect(() => {
+    // Retrieve phone number details from localStorage
+    const savedPhone = localStorage.getItem('userPhone');
+    const savedCountryCode = localStorage.getItem('userCountryCode');
+    const savedFullPhone = localStorage.getItem('userFullPhone');
+    
+    if (savedPhone) {
+      setPhone(savedPhone);
+    }
+    
+    if (savedCountryCode) {
+      setCountryCode(savedCountryCode);
+    }
+    
+    if (savedFullPhone) {
+      setFullPhone(savedFullPhone);
+    }
+  }, []);
+
+  const handleVerOtp = async (e) => {
+    e.preventDefault();
+ setIsLoading(true);
+    if (otpNo.length < 4) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter full 4-digit OTP.",
+      });
+      return;
+    }
+
+    // Use the retrieved fullPhone from localStorage
+    const formData = {
+      mobile_number: fullPhone,
+      otp: otpNo,
+    };
+
+    console.log("Sending verification data:", formData);
+
+    try {
+      const res = await VerifyOtp(formData);
+      console.log("Verification response:", res);
+      
+      if (res.status === "ok") {
+        toast({
+          title: "Success",
+          description: "OTP verified successfully!",
+        });
+        navigate("/register");
+      } else {
+        toast({
+          title: "Failed",
+          description: "Failed to verify OTP. Please try again.",
+        });
+      }
+    } catch (err) {
+      console.error("OTP verification error:", err);
+      toast({
+        title: "Error",
+        description: "Error verifying OTP. Please try again.",
+      });
+    }
+  };
+
+  // Determine theme-specific classes
+  const getThemeClasses = () => {
+    if (!theme || theme === "default") return "";
+    return `theme-${theme}`;
+  };
+
+  const themeClasses = getThemeClasses();
+  const LoadingOverlay = () => (
+    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-3xl">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="w-24 h-24">
+          <Lottie animationData={Ani} loop={true} />
+        </div>
+        <p className="text-sm text-muted-foreground">Signing you in...</p>
+      </div>
+    </div>
+  );
+  return (
+    <LoginBackground themeClasses={themeClasses}>
+      <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-sm bg-card/80 border-border/50 rounded-3xl">
+        
+          {isLoading && <LoadingOverlay />}
+          <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-2">
+            <img
+              src={Logo}
+              alt="Logo"
+              className="relative z-10 w-20 h-20 animate-pulse-subtle"
+            />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">
+            Verification Code
+          </CardTitle>
+          <CardDescription className="text-center">
+            Please enter the code sent to {countryCode} {phone}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <div className="grid gap-6">
+            <OtpForm
+              otpNo={otpNo}
+              setOtpNo={setOtpNo}
+              onSubmit={handleVerOtp}
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </LoginBackground>
+  );
+};
+
+export default OtpPage;
