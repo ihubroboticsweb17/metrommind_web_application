@@ -61,6 +61,26 @@ const JunpsychologistDashboard = () => {
   const [selectedPatient, setSelectedPatient] = useState(patient[0]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOpenSlot, setIsOpenSlot] = useState(false);
+      const [refreshList, setRefreshList] = useState(false);
+  const [open, setOpen] = useState(false); 
+  const [openFreq, setOpenFreq] = useState(false); 
+    const [openMedicine, setOpenMedicine] = useState(false); 
+      const [refreshListfre, setRefreshListfre] = useState(false);
+            const [refreshListBrand, setRefreshListBrand] = useState(false);
+ // dialog control
+
+  const handleSuccess = () => {
+    setOpenMedicine(false);
+    setRefreshList((prev) => !prev); 
+  };
+    const handleSuccessFre = () => {
+    setOpenFreq(false);
+    setRefreshListfre((prev) => !prev); 
+  };
+     const handleSuccessBrand = () => {
+    setOpen(false);
+    setRefreshListBrand((prev) => !prev); 
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/95">
       <Navbar />
@@ -244,17 +264,17 @@ const JunpsychologistDashboard = () => {
           </TabsContent>
           <TabsContent value="slotList" className="space-y-6">
             <Card className="border-teal-100 shadow-teal-glow bg-white">
-              <CardHeader className="bg-teal-50 border-b border-teal-100">
+              {/* <CardHeader className="bg-teal-50 border-b border-teal-100">
                 <CardTitle className="text-teal-800">Slot List</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent> */}
             <BookingSlotList/>
-              </CardContent>
+              {/* </CardContent> */}
             </Card>
           </TabsContent>
             <TabsContent value="medicine" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Dialog>
+              <Dialog open={openMedicine} onOpenChange={setOpenMedicine}>
                 <Card className="border-teal-100 shadow-sm overflow-hidden bg-white col-span-3 md:col-span-1">
                   <CardHeader className="bg-teal-50 border-b border-teal-100">
                     <CardTitle className="text-teal-800 flex items-center justify-between">
@@ -273,7 +293,7 @@ const JunpsychologistDashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <MedicineListTab /><MedicineListTab/>
+                    <MedicineListTab  refreshTrigger={refreshList}/>
                   </CardContent>
                 </Card>
                 <DialogContent>
@@ -282,11 +302,11 @@ const JunpsychologistDashboard = () => {
                       Add New Medicine
                     </DialogTitle>
                   </DialogHeader>
-                  <AddMedicineTab />
+                  <AddMedicineTab onSuccess={handleSuccess} />
                 </DialogContent>
               </Dialog>
 
-              <Dialog>
+              <Dialog open={open} onOpenChange={setOpen}>
                 <Card className="border-teal-100 shadow-sm overflow-hidden bg-white col-span-3 md:col-span-1">
                   <CardHeader className="bg-teal-50 border-b border-teal-100">
                     <CardTitle className="text-teal-800 flex items-center justify-between">
@@ -305,7 +325,7 @@ const JunpsychologistDashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <MedicineBrandTab />
+                    <MedicineBrandTab refreshTrigger={refreshListBrand} />
                   </CardContent>
                 </Card>
                 <DialogContent>
@@ -314,11 +334,11 @@ const JunpsychologistDashboard = () => {
                       Add New Brand
                     </DialogTitle>
                   </DialogHeader>
-                  <AddMedicineBrandTab />
+                  <AddMedicineBrandTab  onSuccess={handleSuccessBrand}/>
                 </DialogContent>
               </Dialog>
 
-              <Dialog>
+              <Dialog open={openFreq} onOpenChange={setOpenFreq}>
                 <Card className="border-teal-100 shadow-sm overflow-hidden bg-white col-span-3 md:col-span-1">
                   <CardHeader className="bg-teal-50 border-b border-teal-100">
                     <CardTitle className="text-teal-800 flex items-center justify-between">
@@ -337,7 +357,7 @@ const JunpsychologistDashboard = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <MedicineFreqTab />
+                    <MedicineFreqTab refreshTrigger={refreshListfre}/>
                   </CardContent>
                 </Card>
                 <DialogContent>
@@ -346,7 +366,7 @@ const JunpsychologistDashboard = () => {
                       Add New Frequency
                     </DialogTitle>
                   </DialogHeader>
-                  <AddMedicineFreqTab />
+                  <AddMedicineFreqTab onSuccess={handleSuccessFre}/>
                 </DialogContent>
               </Dialog>
             </div>

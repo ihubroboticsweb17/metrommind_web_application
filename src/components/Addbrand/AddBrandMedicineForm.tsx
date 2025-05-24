@@ -34,10 +34,11 @@ const AddBrandMedicineForm = ({
             required
           />
         </div>
-        <Button type="submit" className="w-full group relative overflow-hidden">
-          <span className="absolute inset-0 w-0 group-hover:w-full transition-all duration-500 h-full bg-gradient-to-r from-primary/80 to-primary"></span>
+  
+           <Button type="submit" className="w-full group relative overflow-hidden">
+          <span className="absolute inset-0 w-0 transition-all duration-500 h-full bg-gradient-to-r from-primary/80 to-primary"></span>
           <span className="relative flex items-center justify-center gap-2">
-            Add Brand
+           Add Brand
           </span>
         </Button>
       </div>

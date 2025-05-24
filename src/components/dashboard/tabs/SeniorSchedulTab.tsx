@@ -79,6 +79,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 interface Patient {
   id: string;
   patient_name: string;
@@ -244,7 +245,7 @@ const SeniorSchedulTab = () => {
           </div>
         </CardHeader>
          <CardContent className="pt-4 px-3 md:px-6">
-           <div className="relative w-full">
+           {/* <div className="relative w-full">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search className="h-4 w-4 text-gray-500" />
         </div>
@@ -263,7 +264,20 @@ const SeniorSchedulTab = () => {
             <X className="h-4 w-4 text-gray-500" />
           </button>
         )}
-      </div>
+      </div> */}
+      {/* Search and Add Doctor Header */}
+                <div className="flex flex-col sm:flex-row justify-between gap-3 items-center mb-4">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-teal-500" />
+                    <Input
+                      type="text"
+                      placeholder="Search Shedule..."
+                      className="pl-9 border-teal-200 focus:border-teal-500 focus:ring-teal-500"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
 
       <div className="space-y-3">
         <div className="font-medium text-teal-800 flex items-center gap-2">

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {  deleteMedicineBrand, MedicineBrandlist} from "@/models/auth"; // your api
 import { useToast } from "@/hooks/use-toast";
-import { Delete, Trash2 } from "lucide-react";
+import { Delete, Search, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 interface Medicine {
   id: number;
@@ -15,7 +17,9 @@ const MedicineBrandTab: React.FC<MedicineBrandTabProps> = ({ refreshTrigger }) =
   const [medicineList, setMedicineList] = useState<Medicine[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const fetchMedicinebrandlist = async () => {
     try {
       setLoading(true);
@@ -48,7 +52,17 @@ const MedicineBrandTab: React.FC<MedicineBrandTabProps> = ({ refreshTrigger }) =
       });
     }
   };
+const filteredData = medicineList.filter((medicine) =>
+  medicine.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
+const totalItems = filteredData.length;
+const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+const paginatedData = filteredData.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
   return (
     <div>
       {loading ? (
@@ -56,8 +70,25 @@ const MedicineBrandTab: React.FC<MedicineBrandTabProps> = ({ refreshTrigger }) =
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
+        <Card>
+           <div className="flex flex-col sm:flex-row justify-between gap-3 items-center mb-4 m-2">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-teal-500" />
+              <Input
+                type="text"
+                placeholder="Search Brands"
+                className="pl-9  border-teal-200 focus:border-teal-500 focus:ring-teal-500"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); 
+                }}
+              />
+            </div>
+          </div>
+       
         <ul className="space-y-3">
-          {medicineList.map((medicine) => (
+          {paginatedData.map((medicine) => (
             <li
               key={medicine.id}
               className="flex items-center justify-between bg-gray-50 p-2 rounded-lg shadow-sm hover:bg-gray-100 transition"
@@ -82,6 +113,24 @@ const MedicineBrandTab: React.FC<MedicineBrandTabProps> = ({ refreshTrigger }) =
             </li>
           ))}
         </ul>
+        <div className="flex justify-center m-4 gap-2">
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    className="px-3 py-1 bg-teal-100 rounded-md disabled:opacity-50"
+  >
+    Prev
+  </button>
+  <span className="px-3 py-1">{`Page ${currentPage} of ${totalPages}`}</span>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+    disabled={currentPage === totalPages}
+     className="px-3 py-1 bg-teal-100 rounded-md disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+         </Card>
       )}
     </div>
   );

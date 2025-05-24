@@ -316,14 +316,14 @@ const AdminDashboard = () => {
               
               <span className="hidden sm:inline">Medicine Stock</span>
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="aiengine"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg gap-2"
             >
               <BrainCircuit className="h-4 w-4" />
              <span className="hidden sm:inline">AI Engine</span>    
 
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="patients" className="space-y-6">

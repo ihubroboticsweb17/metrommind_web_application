@@ -98,8 +98,8 @@ const SlotSelector = () => {
         title: "Success",
         description: "Slot Create completed!",
       });
-setLoading(true);
-setTimeout(() => setLoading(false), 3000);
+      setLoading(true);
+      setTimeout(() => setLoading(false), 3000);
     } catch (error: any) {
       console.error("Slot Create failed:", error);
 
@@ -218,21 +218,15 @@ setTimeout(() => setLoading(false), 3000);
             required
           />
         </div>
-        
       </div>
       <div className="gap-2 flex justify-center p-4 ">
-          <Button
-       
-
-            type="submit"
-            className="w-full group relative overflow-hidden"
-          >
-            <span className="absolute inset-0 w-0 group-hover:w-full transition-all duration-500 h-full bg-gradient-to-r from-primary/80 to-primary"></span>
-            <span className="relative flex items-center justify-center gap-2">
-              Add slot
-            </span>
-          </Button>
-        </div>
+        <Button type="submit" className="w-full group relative overflow-hidden">
+          <span className="absolute inset-0 w-0 transition-all duration-500 h-full bg-gradient-to-r from-primary/80 to-primary"></span>
+          <span className="relative flex items-center justify-center gap-2">
+            Add slot
+          </span>
+        </Button>
+      </div>
     </form>
   );
 };

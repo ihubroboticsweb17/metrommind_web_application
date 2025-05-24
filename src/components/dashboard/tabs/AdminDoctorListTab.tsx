@@ -642,7 +642,7 @@ const AdminDoctorListTab = () => {
               </Button>
                 <Button
                 className="bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1"
-                onClick={() => setIsAddDoctorDialogOpen(true)}
+                onClick={() => setIsOpenSlot(true)}
               >
                 <Plus className="h-4 w-4" />
                 Add Slot
