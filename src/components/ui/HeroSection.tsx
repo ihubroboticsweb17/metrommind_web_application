@@ -50,7 +50,9 @@ const HeroSection = ({ theme = "default" }: HeroSectionProps) => {
         break;
     }
   };
-
+const handleSignup  = () => {
+   navigate("/phoneverify");
+}
   const getThemeClasses = () => {
     switch (theme) {
       case "royal":
@@ -208,11 +210,12 @@ const HeroSection = ({ theme = "default" }: HeroSectionProps) => {
                 <ArrowRight className="inline-block ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             )}
-            {/* <button
-              className={`px-6 py-2.5 rounded-md border transition-colors duration-300 ${getSecondaryButtonClass()}`}
+            <button
+             onClick={handleSignup}
+              className={`px-6 py-2.5 rounded-md border transition-colors group-hover:translate-x-1  duration-300 ${getSecondaryButtonClass()}`}
             >
-              Learn More
-            </button> */}
+            Sign up
+            </button>
           </div>
         </div>
         <div className="border-b border-teal-200 mt-32"></div>

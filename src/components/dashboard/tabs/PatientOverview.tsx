@@ -37,6 +37,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
+import ChatButtonTab from "./ChatButtonTab";
 
 interface Diagnosis {
   diagnosis_summary: string;
@@ -83,7 +84,11 @@ interface UserData {
 
     ai_report: {
       patient_report: {
-        [key: string]: string;
+        patient_summary: string | null;
+        physical_symptoms: string | null;
+        emotional_symptoms: string | null;
+        cognitive_symptoms: string | null;
+        behavioral_symptoms: string | null;
       };
       therapist_report: {
         Severity: number | null;
@@ -133,11 +138,12 @@ const PatientOverview = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [addOnObs, setAddOnObs] = useState("");
   const [disease, setDisease] = useState(null);
+  const [isApproved, setIsApproved] = useState(false);
+  const [data, setData] = useState(null)
   console.log("setSelectedDate$$$$$$$$$", selectedPatient);
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        
         const data = await patientlist();
         console.log("data", data);
         setPatients(data);
@@ -158,7 +164,7 @@ const PatientOverview = () => {
     };
 
     fetchPatients();
-  }, [toast,loading]);
+  }, [toast, loading]);
 
   // useEffect(() => {
   //   if (
@@ -171,17 +177,20 @@ const PatientOverview = () => {
   //   }
   // }, [selectedPatient]);
   useEffect(() => {
-  if (
-    selectedPatient?.diagnosis?.length > 0 &&
-    selectedPatient.diagnosis[selectedPatient.diagnosis.length - 1]?.ai_report?.therapist_report
-  ) {
-    const lastDiagnosis = selectedPatient.diagnosis[selectedPatient.diagnosis.length - 1];
-console.log("lastDiagnosis",lastDiagnosis);
-    setCheckState(lastDiagnosis.ai_report.therapist_report);
-    setDisease(lastDiagnosis.id);
-    setReportPdf(lastDiagnosis.ai_summary_file);
-  }
-}, [selectedPatient]);
+    if (
+      selectedPatient?.diagnosis?.length > 0 &&
+      selectedPatient.diagnosis[selectedPatient.diagnosis.length - 1]?.ai_report
+        ?.therapist_report
+    ) {
+      const lastDiagnosis =
+        selectedPatient.diagnosis[selectedPatient.diagnosis.length - 1];
+      console.log("lastDiagnosis", lastDiagnosis);
+      setCheckState(lastDiagnosis.ai_report.therapist_report);
+      setDisease(lastDiagnosis.id);
+      setReportPdf(lastDiagnosis.ai_summary_file);
+      setData(lastDiagnosis.ai_report.patient_report.patient_summary);
+    }
+  }, [selectedPatient]);
 
   console.log("diaganosis report ai ", checkState);
   console.log("show  ", checkState);
@@ -382,24 +391,57 @@ console.log("lastDiagnosis",lastDiagnosis);
       });
     }
   };
+  // const handleChatEnable = async () => {
+  //   try {
+  //     const formData = { patient_id: selectedPatient.id };
+  //     const response = await ChatEnableApi(formData);
+  //     if (response.status === "true") {
+  //       toast({
+  //         title: "Success",
+  //         description: "AI chat enabled"
+  //       });
+  //       setIsApproved(true);
+  //     } else {
+  //       throw new Error(response.message || "Unknown error.");
+  //     }
+  //   } catch (err) {
+  //     console.error("chat generation failed", err);
+  //     toast({
+  //       title: "Error",
+  //       description: "AI chat is already enabled",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
   const handleChatEnable = async () => {
     try {
       const formData = { patient_id: selectedPatient.id };
       const response = await ChatEnableApi(formData);
-      if (response.status === "ok") {
+
+      if (response.status === "true") {
         toast({
           title: "Success",
-          description: "AI chat enabled"
+          description: "AI chat enabled",
         });
-        // setIsApproved(true);
+        setIsApproved(true); // Hide or disable the button
+      } else if (response.message === "AI chat is already enabled.") {
+        toast({
+          title: "Info",
+          description: "AI chat is already enabled.",
+        });
+        setIsApproved(true); // Also treat this as success
       } else {
-        throw new Error(response.message || "Unknown error.");
+        toast({
+          title: "Error",
+          description: response.message || "Unknown error.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
-      console.error("chat generation failed", err);
+      console.error("Chat generation failed", err);
       toast({
         title: "Error",
-        description: "AI chat is already enabled",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }
@@ -426,6 +468,28 @@ console.log("lastDiagnosis",lastDiagnosis);
   //       console.error("Approval error:", error);
   //     }
   //   }
+  const handleChatDisable = async () => {
+    try {
+      const formData = { patient_id: selectedPatient.id };
+      const response = await ChatEnableApi(formData); // Assuming you have this API
+      if (response.status === "ok") {
+        toast({
+          title: "Success",
+          description: "AI chat disabled",
+        });
+        setIsApproved(false); // Update state if using isApproved
+      } else {
+        throw new Error(response.message || "Unknown error.");
+      }
+    } catch (err) {
+      console.error("chat disable failed", err);
+      toast({
+        title: "Error",
+        description: "Failed to disable chat",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -611,7 +675,11 @@ console.log("lastDiagnosis",lastDiagnosis);
                           <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-teal-800">
                               AI Diagnosis Summary
-                            </h3>
+                            </h3><br/>
+                            
+                       
+                            
+                           
                             <Button
                               onClick={() => setAiReportDialogOpen(true)}
                               variant="outline"
@@ -619,7 +687,9 @@ console.log("lastDiagnosis",lastDiagnosis);
                             >
                               View Full AI Report
                             </Button>
+                     
                           </div>
+                          <p className="flex text-sm text-gray-600"> {data}</p>
                           <p className="text-gray-600">
                             {/* Patient shows signs of moderate depression and anxiety with potential risk factors that
                             require attention. Recommended for further evaluation by a specialist.
@@ -681,11 +751,13 @@ console.log("lastDiagnosis",lastDiagnosis);
                             Disease Diagnosis
                           </h3>
                           <p className="text-sm text-gray-600">
-                            The patient presents with symptoms consistent with
+                            {/* The patient presents with symptoms consistent with
                             major depressive disorder and generalized anxiety
                             disorder. There are concerning indicators of
                             suicidal ideation that require immediate attention
-                            and intervention.
+                            and intervention. */}
+                           {checkState?.disease_diagnosed}
+                         
                           </p>
                         </div>
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
@@ -693,13 +765,11 @@ console.log("lastDiagnosis",lastDiagnosis);
                             Diagnosis Suggestions
                           </h3>
                           <ul className="text-sm text-gray-600 list-disc ml-4 space-y-1">
-                            <li>Generalized anxiety disorder</li>
-                            <li>Major depressive disorder</li>
-                            <li>
-                              Possible bipolar disorder - further assessment
-                              needed
+                            <li>{checkState?.presenting_complaints}</li>
+                            <li>{checkState?.mood_cognition_thought}</li>
+                            <li>{checkState?.patient_goals_expectations}
                             </li>
-                            <li>Sleep disturbance</li>
+                            {/* <li>Sleep disturbance</li> */}
                           </ul>
                         </div>
                         <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
@@ -712,7 +782,7 @@ console.log("lastDiagnosis",lastDiagnosis);
                                 ⚠️ High
                               </Badge>
                               <p className="text-sm text-red-600">
-                                Suicide risk - requires immediate intervention
+                                Suicide risk - {checkState?.suicidality_risk}
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -749,28 +819,46 @@ console.log("lastDiagnosis",lastDiagnosis);
                           <div className="space-y-2 text-sm text-gray-600">
                             <p>
                               <span className="font-medium">Therapy:</span>{" "}
-                              Cognitive Behavioral Therapy (CBT) with a focus on
-                              depression and anxiety management.
+                              {/* Cognitive Behavioral Therapy (CBT) with a focus on
+                              depression and anxiety management. */}
+                              {checkState?.psychiatric_history}
                             </p>
                             <p>
                               <span className="font-medium">Medication:</span>{" "}
-                              Consider SSRI antidepressants under psychiatric
-                              supervision.
+                              {/* Consider SSRI antidepressants under psychiatric
+                              supervision. */}
+                              {checkState?.medical_history}
                             </p>
                             <p>
                               <span className="font-medium">Follow-up:</span>{" "}
-                              Weekly sessions initially, with suicide risk
-                              assessment at each visit.
+                              {/* Weekly sessions initially, with suicide risk
+                              assessment at each visit. */}
+                              {checkState?.substance_use}
                             </p>
                           </div>
                         </div>
                         <div>
-                          <Button
+                          {/* <Button
                             onClick={handleChatEnable}
                             className="bg-teal-600 hover:bg-teal-700"
                           >
                             Chat Enable
-                          </Button>
+                          </Button> */}
+                          {/* <Button
+    onClick={isApproved ? handleChatDisable : handleChatEnable}
+    className={isApproved ? "bg-red-600 hover:bg-red-700" : "bg-teal-600 hover:bg-teal-700"}
+  >
+    {isApproved ? "Chat Disable" : "Chat Enable"}
+  </Button> */}
+                          {/* <ChatButtonTab selectedPatient={selectedPatient.patient_id || selectedPatient.id}/> */}
+                          {!isApproved && (
+                            <Button
+                              onClick={handleChatEnable}
+                              className="bg-teal-600 hover:bg-teal-700"
+                            >
+                              Chat Enable
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </TabsContent>

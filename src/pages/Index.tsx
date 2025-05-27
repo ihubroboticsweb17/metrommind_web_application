@@ -25,6 +25,8 @@ import FeaturesSection from "@/components/ui/FeaturesSection";
 import Navbar from "@/components/layout/Navbar";
 import { useTheme } from "@/App";
 import { useEffect, useState } from "react";
+import FooterSection from "@/components/ui/FooterSection";
+
 
 const Index = () => {
   const { theme } = useTheme();
@@ -62,10 +64,12 @@ const Index = () => {
   return (
     <div className={`min-h-screen ${theme !== "default" ? `theme-${theme}` : ""}`}>
       <Navbar onLearnMore={handleLearnMore} />
-      <div className="pt-8"> {/* Add padding to account for fixed navbar */}
+      <div className="pt-8 pb-6"> {/* Add padding to account for fixed navbar */}
         <HeroSection theme={theme} />
         <FeaturesSection theme={theme} />
+      
       </div>
+      <FooterSection theme={theme}/>
     </div>
   );
 };

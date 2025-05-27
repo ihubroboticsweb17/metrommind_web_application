@@ -235,7 +235,7 @@ const PatientEnquiryTab = () => {
       const formData = {
         patient_id: selectedPatient?.id,
         add_on_obs: addOnObs,
-        diagnosis: disease,
+        diagnosis_id: disease,
         doctor_id: doctorid,
       };
       const response = await AddOnAiSummry(formData);

@@ -865,6 +865,26 @@ export const RejectButton = async (id: number) => {
     throw error;
   }
 };
+export const RejectedPatientList = async () => {
+  try {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+
+    const response = await api.get("", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching patient list:", error);
+    throw error;
+  }
+};
 export const AllReportList= async () => {
   try {
     const token = localStorage.getItem("access_token");
@@ -917,6 +937,18 @@ export const AppointmentDetailtoPatient = async () => {
     console.error("Error fetching patient list:", error);
     throw error;
   }
+};
+export const TalktoEnableButton = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post("accounts/toggle_call_assigning/", formData, {
+    headers,
+  });
+  const data = response.data;
+  return response.data;
 };
 export const AvailableDoctorsList = async () => {
   try {

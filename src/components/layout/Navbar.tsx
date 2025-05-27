@@ -56,7 +56,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
     navigate("/");
     toast({
       title: "Logged out successfully",
-      description: "You have been logged out of your account",
+      description: " You have been sucessfully logout",
     });
   };
 
@@ -65,14 +65,24 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
     if (!role) return "/dashboard";
 
     switch (role) {
-      case "patient":
-        return "/patient-dashboard";
-      case "therapist":
-        return "/therapist-dashboard";
+     
+         case "user":
+        navigate("/patient-dashboard");
+       
+      case "psychiatrist":
+        navigate("/psychiatrist_dashboard");
+ 
+      case "junior_psychologist":
+        navigate("/junior-pysychology-dashboard");
+
       case "admin":
-        return "/admin-dashboard";
+        navigate("/admin-dashboard");
+
+        case "senior_psychologist":
+          navigate("/senior-pysychology-dashboard");
       default:
         return "/dashboard";
+   
     }
   };
 
@@ -117,9 +127,9 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                         <p className="text-xs text-gray-500 capitalize">{role}</p>
                       </div>
                       <div className="px-4 py-2">
-                       <button onClick={onLearnMore }>
+                       {/* <button onClick={onLearnMore }>
                           Dashboard
-                        </button>
+                        </button> */}
                         
                         <button
                           onClick={handleLogout}
