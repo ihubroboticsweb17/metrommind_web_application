@@ -627,8 +627,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LogIn, Eye, EyeOff, Info, User, CircleUserRound, Mail, Phone, GraduationCap, Lock, MapPinHouse, BriefcaseBusiness, CalendarFold } from "lucide-react";
-import { MOCK_USERS } from "@/models/auth";
-
+import { MOCK_USERS, register } from "@/models/auth";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/App";
+import { useNavigate } from "react-router-dom";
 interface RegisterFormProps {
   name: string;
   setName: (name: string) => void;
@@ -697,12 +699,17 @@ const RegisterForm = ({
   onSubmit,
   selectedRole,
 }: RegisterFormProps) => {
+    const navigate = useNavigate();
+  const { toast } = useToast();
+  const { theme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-
+  const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
+     const [error, setError] = useState("");
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   
@@ -850,36 +857,119 @@ const RegisterForm = ({
     }
   };
 
-  // Enhanced submit handler with full validation
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    
-    // Validate all fields
-    const newErrors: ValidationErrors = {};
-    const fields = {
-      name, username, email, mobilenumber, age, gender, 
-      education, occupation, password, confrimpassword, address
-    };
-    
-    Object.entries(fields).forEach(([fieldName, value]) => {
-      const error = validateField(fieldName, value);
-      if (error) newErrors[fieldName as keyof ValidationErrors] = error;
-    });
-    
-    // Check if PDF is required (you can modify this logic)
-    if (!pdfFile) {
-      newErrors.pdf = "Medical report PDF is required";
-    }
-    
-    setErrors(newErrors);
-    setTouched(Object.keys(fields).reduce((acc, key) => ({ ...acc, [key]: true }), {}));
-    
-    // If no errors, proceed with original submit
-    if (Object.keys(newErrors).length === 0) {
-      onSubmit(e);
-    }
+ 
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setLoading(true);
+  setError("");
+
+  // Validate all fields first
+  const newErrors: ValidationErrors = {};
+  const fields = {
+    name, 
+    username, 
+    email, 
+    mobilenumber, 
+    age, 
+    gender,
+    education, 
+    occupation, 
+    password, 
+    confrimpassword, 
+    address
   };
 
+  // Run validation for each field
+  Object.entries(fields).forEach(([fieldName, value]) => {
+    const error = validateField(fieldName, value);
+    if (error) newErrors[fieldName as keyof ValidationErrors] = error;
+  });
+
+  // Check if PDF is required (modify this logic as needed)
+  if (!pdfFile) {
+    newErrors.pdf = "Medical report PDF is required";
+  }
+
+  // Update errors and touched state
+  setErrors(newErrors);
+  setTouched(Object.keys(fields).reduce((acc, key) => ({ ...acc, [key]: true }), {}));
+
+  // If validation fails, stop here and don't proceed with API call
+  // if (Object.keys(newErrors).length > 0) {
+  //   setIsLoading(false);
+  //   setLoading(false);
+    
+  //   // Show validation error toast
+  //   toast({
+  //     variant: "destructive",
+  //     title: "Validation Error",
+  //     description: "Please fix the errors in the form before submitting.",
+  //   });
+    
+  //   return; // Exit early if validation fails
+  // }
+
+  // If validation passes, proceed with registration
+  const formData = {
+    name,
+    username,
+    email,
+    mobile_number: mobilenumber, // This will now have the value from localStorage
+    age,
+    gender,
+    education,
+    occupation,
+    address,
+    password,
+    confirm_password: confrimpassword,
+  };
+
+  console.log("Sending data:", formData);
+
+  try {
+    const data = await register(formData);
+
+    console.log("Registration successful!", data);
+    toast({
+      title: "Success",
+      description: "Registration completed!",
+    });
+    
+    // Only navigate to login if registration is successful
+    navigate("/login");
+  } catch (error: any) {
+    console.error("Registration failed:", error);
+
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+
+      // Loop through all error fields and show them in toasts
+      for (const key in errorData) {
+        if (errorData.hasOwnProperty(key)) {
+          const messages = Array.isArray(errorData[key])
+            ? errorData[key].join(", ")
+            : errorData[key];
+
+          toast({
+            variant: "destructive",
+            title: `${key.charAt(0).toUpperCase() + key.slice(1)} Error`,
+            description: messages,
+          });
+        }
+      }
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Unexpected Error",
+        description: "Something went wrong. Please try again later.",
+      });
+    }
+  } finally {
+    setLoading(false);
+    setIsLoading(false);
+  }
+};
   const ErrorMessage = ({ error }: { error?: string }) => 
     error ? <p className="text-red-500 text-sm mt-1">{error}</p> : null;
 

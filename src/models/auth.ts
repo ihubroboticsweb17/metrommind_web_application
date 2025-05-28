@@ -873,7 +873,7 @@ export const RejectedPatientList = async () => {
       throw new Error("No access token found. Please log in.");
     }
 
-    const response = await api.get("", {
+    const response = await api.get("accounts/notapproved-users/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

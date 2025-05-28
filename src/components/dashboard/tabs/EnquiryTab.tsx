@@ -857,17 +857,18 @@ const [summary,setSummary]=useState()
   // Fetch assessment data
   useEffect(() => {
     const fetchAssessments = async () => {
-      if (!patientData?.patient_id) return;
+      if (!patientData?.id) return;
 
       setAssessmentLoading(true);
       try {
         const response: AssessmentResponse = await PatientAssessmentList(
-          patientData.patient_id
+          Number(patientData?.id)
         );
         console.log("assessment data:", response);
 
         if (response.status === "ok" && response.data) {
           setAssessmentData(response.data);
+          console.log("AAA",response.data)
         } else {
           setError("Failed to fetch assessment data");
         }
@@ -880,7 +881,7 @@ const [summary,setSummary]=useState()
     };
 
     fetchAssessments();
-  }, [patientData?.patient_id]);
+  }, [patientData?.id]);
 
   const handleChatbotOpen = () => {
     navigate("/chatbot");
