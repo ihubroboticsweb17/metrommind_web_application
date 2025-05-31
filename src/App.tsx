@@ -27,6 +27,11 @@ import PhoneNoVerify from "./pages/PhoneNoVerify";
 import ChatUI from "./components/dashboard/tabs/ChatUI";
 import EnquiriesListTab from "./components/dashboard/tabs/EnquiriesListTab";
 import PatientEnquiryTab from "./components/dashboard/tabs/PatientEnquiryTab";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import EmailOtpForgoatPassword from "./pages/EmailOtpForgoatPassword";
+import StepVerifyOtp from "./pages/StepVerifyOtp";
+import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
+import PasswordRestPage from "./pages/PasswordRestPage";
 // Define available themes
 export type ThemeType =
   | "default"
@@ -166,6 +171,8 @@ const App = () => {
                     </ProtectedRoute>
                   }
                 />
+                 <Route path="/chat" element={ <ProtectedRoute><ChatUI/></ProtectedRoute>} />
+              
                 {/* <Route path="/login" element={<Login />} /> */}
                 {/* <Route path="/register" element={<Register/>} /> */}
                 {/* <Route path="/patient-dashboard" element={<PatientDashboard />} />
@@ -175,15 +182,19 @@ const App = () => {
                 <Route path="/junior-pysychology-dashboard" element={<JunpsychologistDashboard/>} />
                 <Route path="/psychiatrist_dashboard" element={<PsychiatristDashboard/>} /> */}
                 <Route path="*" element={<NotFound />} />
-                <Route path="/chatbot" element={<ChatBotPage />} />
+                <Route path="/chatbot" element={<ProtectedRoute><ChatBotPage /></ProtectedRoute>} />
                 <Route path="/createDoctor" element={<DoctorCreateForm />} />
                 <Route path="/doctorCallList" element={<DoctorCallList />} />
                 <Route path="/profile/:id" element={<ProfileViewTab/>} />
                 <Route path="/otp" element={<OtpPage/>} />
                 <Route path="/phoneverify" element={<PhoneNoVerify/>} />
-                <Route path="/chat" element={<ChatUI/>} />
+                {/* <Route path="/chat" element={<ChatUI/>} /> */}
                 <Route path="/enquiries" element={<EnquiriesListTab/>} />
-                <Route path="/patient-enquiry" element={<PatientEnquiryTab/>} />
+                <Route path="/patient-enquiry" element={<ProtectedRoute><PatientEnquiryTab/></ProtectedRoute>} />
+                  {/* <Route path="/forgotpassword" element={<ForgotPasswordPage/>}/> */}
+                         {/* <Route path="/VerifyOtp" element={<EmailOtpForgoatPassword/>}/> */}
+                        <Route path="/Emailverify" element={<ForgotPasswordFlow/>}/>
+                            {/* <Route path="/Passwordrest" element={<PasswordRestPage/>}/> */}
                 <Route
                   path="/MedicalReport"
                   element={

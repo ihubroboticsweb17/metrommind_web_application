@@ -534,8 +534,16 @@ const LoginForm = ({
         </div>
 
         <div className="grid gap-2">
+         
           <div className="flex items-center justify-between">
             <Label htmlFor="password" className="text-gray-400">Password</Label>
+             <a
+              // href="/forgotpassword"
+                href="/Emailverify"
+             className="text-sm text-primary underline-offset-4 hover:underline"
+            >
+               Forgot password?
+             </a> 
           </div>
           
           <div className="relative">

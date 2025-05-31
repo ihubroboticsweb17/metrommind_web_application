@@ -130,6 +130,8 @@ const PatientOverview = () => {
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
   const [aiReportDialogOpen, setAiReportDialogOpen] = useState(false);
+  
+  const [aiSecondReportDialogOpen, setAiSecondReportDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [addonData, setAddonData] = useState<UserData | null>(null);
   const [checkState, setCheckState] = useState(null);
@@ -140,6 +142,9 @@ const PatientOverview = () => {
   const [disease, setDisease] = useState(null);
   const [isApproved, setIsApproved] = useState(false);
   const [data, setData] = useState(null)
+   const [seconds,setSeconds]=useState(null);
+      const [secondsPdf,setSecondsPdf]=useState<string | null>(null);
+      const [load, setLoad] = useState(false);
   console.log("setSelectedDate$$$$$$$$$", selectedPatient);
   useEffect(() => {
     const fetchPatients = async () => {
@@ -189,6 +194,14 @@ const PatientOverview = () => {
       setDisease(lastDiagnosis.id);
       setReportPdf(lastDiagnosis.ai_summary_file);
       setData(lastDiagnosis.ai_report.patient_report.patient_summary);
+         if (selectedPatient.diagnosis.length > 1) {
+      const secondDiagnosis =
+        selectedPatient.diagnosis[selectedPatient.diagnosis.length - 2];
+      console.log("secondDiagnosis", secondDiagnosis.ai_summary_file);
+
+      setSeconds(secondDiagnosis.ai_report?.patient_report?.patient_summary || "");
+      setSecondsPdf(secondDiagnosis.ai_summary_file || "");
+    }
     }
   }, [selectedPatient]);
 
@@ -414,6 +427,7 @@ const PatientOverview = () => {
   //   }
   // };
   const handleChatEnable = async () => {
+       setLoad(true);
     try {
       const formData = { patient_id: selectedPatient.id };
       const response = await ChatEnableApi(formData);
@@ -676,10 +690,6 @@ const PatientOverview = () => {
                             <h3 className="font-semibold text-teal-800">
                               AI Diagnosis Summary
                             </h3><br/>
-                            
-                       
-                            
-                           
                             <Button
                               onClick={() => setAiReportDialogOpen(true)}
                               variant="outline"
@@ -690,6 +700,28 @@ const PatientOverview = () => {
                      
                           </div>
                           <p className="flex text-sm text-gray-600"> {data}</p>
+                          <p className="text-gray-600">
+                            {/* Patient shows signs of moderate depression and anxiety with potential risk factors that
+                            require attention. Recommended for further evaluation by a specialist.
+                          */}
+                            {checkState?.Presenting_Complaints}{" "}
+                          </p>
+                        </div>
+                         <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-semibold text-teal-800">
+                            Second Diagnosis Summary
+                            </h3><br/>
+                            <Button
+                              onClick={() => setAiSecondReportDialogOpen(true)}
+                              variant="outline"
+                              className="border-teal-600 text-teal-600 hover:bg-teal-50"
+                            >
+                        View Second Assessment Report
+                            </Button>
+                     
+                          </div>
+                          {/* <p className="flex text-sm text-gray-600"> {seconds}</p> */}
                           <p className="text-gray-600">
                             {/* Patient shows signs of moderate depression and anxiety with potential risk factors that
                             require attention. Recommended for further evaluation by a specialist.
@@ -855,9 +887,10 @@ const PatientOverview = () => {
                             <Button
                               onClick={handleChatEnable}
                               className="bg-teal-600 hover:bg-teal-700"
+                                disabled={load}
                             >
-                              Chat Enable
-                            </Button>
+                              {load ? "Submitting..." : "Chat Enable "}
+                            </Button>  
                           )}
                         </div>
                       </div>
@@ -1096,6 +1129,43 @@ const PatientOverview = () => {
                       <CheckCircle className="w-4 h-4 mr-1" /> Approve
                     </Button>
                   </div> */}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={aiSecondReportDialogOpen} onOpenChange={setAiSecondReportDialogOpen}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-teal-800">
+              Second Assessment Report
+            </DialogTitle>
+          </DialogHeader>
+          <div className="h-[60vh] overflow-auto border rounded-md bg-white">
+            {secondsPdf ? (
+              <iframe
+                src={secondsPdf}
+                title="AI Report PDF"
+                width="100%"
+                height="100%"
+                className="border-0"
+              ></iframe>
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex justify-between items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                if (secondsPdf) {
+                  window.open(secondsPdf, "_blank");
+                }
+              }}
+            >
+              <Download className="w-4 h-4 mr-2" /> Download
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

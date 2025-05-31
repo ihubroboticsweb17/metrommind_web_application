@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { quotesauth,} from "@/models/auth";
 import { useToast } from "@/hooks/use-toast";
 import PatientCountTab from "./PatientCountTab";
+import PatientDataTab from "./PatientDataTab";
 
 interface Quote {
       quote:string;
@@ -39,14 +40,7 @@ const OverviewTab = () => {
 
   return (
     <div className="space-y-4">
-       {/* <div className=" gap-4 bg-yellow-200 text-teal-800 p-3 rounded-md shadow-inner">
-       {quote.map((q, i) => (
-  <div key={i}>
-       <p className="italic text-gray-800 text-lg">“{q.quote}”</p>
-       <p className="mt-4 text-right font-semibold text-gray-600">— {q.author}</p>
-       </div>
-))}
-      </div> */}      {/* Quote Card - Animated and Interactive */}
+     {/* Quote Card - Animated and Interactive */}
       {!loading && quote.length > 0 && (
         <Card className="overflow-hidden group transition-all duration-300 hover:shadow-lg">
           <div
@@ -88,7 +82,8 @@ const OverviewTab = () => {
       )}
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-      <EnquiryTab/>
+      {/* <EnquiryTab/> */}
+ <PatientDataTab/>
       </div>
       {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatsCard 

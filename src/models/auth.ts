@@ -69,11 +69,9 @@ export const VerifyPhoneNo = async (
     const response = await api.post("accounts/send_otp/", formData, {
       headers,
     });
-     
-     
+
     console.log("VerifyPhoneNo response", response.data);
     return response.data;
-  
   } catch (error) {
     console.error("VerifyPhoneNo error:", error);
     throw error;
@@ -171,9 +169,13 @@ export const patientDiagnosis = async (
     "Content-Type": "application/json",
   }
 ) => {
-  const response = await api.post("patient_functions/patient/diagnosis/data/", formData, {
-    headers,
-  });
+  const response = await api.post(
+    "patient_functions/patient/diagnosis/data/",
+    formData,
+    {
+      headers,
+    }
+  );
   const data = response.data;
   console.log("data", data);
   return response.data;
@@ -226,6 +228,48 @@ export const assignDoctorToPatient = async (
   return response.data;
 };
 
+export const ForgotPasswordSentOpt = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post(
+    "forgott_password/forgot/password/",
+    formData,
+    {
+      headers,
+    }
+  );
+  const data = response.data;
+  return response.data;
+};
+export const VerifyOtpAndResetPassword = async (
+ id: string | number,
+  formData:any
+) => {
+  try {
+    const response = await api.post(`forgott_password/verify/otp/${id}/`,{formData});
+    console.log("OTP verification response:", response);
+    return response;
+  } catch (error: any) {
+    console.error("Error verifying OTP:", error);
+    throw error;
+  }
+};
+export const ResetPassword = async (
+ id: string | number,
+  formData:any
+) => {
+  try {
+    const response = await api.post(`forgott_password/new/password/${id}/`,{formData});
+    console.log("OTP verification response:", response);
+    return response;
+  } catch (error: any) {
+    console.error("Error verifying OTP:", error);
+    throw error;
+  }
+};
 export const Doctorregister = async (
   formData: any,
   headers = {
@@ -269,7 +313,7 @@ export const MedicineDetailList = async () => {
       },
     });
 
-    return response.data; 
+    return response.data;
   } catch (error: any) {
     console.error("Error fetching medicine list:", error);
     throw error;
@@ -388,9 +432,13 @@ export const ObservationCreated = async (
     "Content-Type": "application/json",
   }
 ) => {
-  const response = await api.post("doctor_observations/observation/create/", formData, {
-    headers,
-  });
+  const response = await api.post(
+    "doctor_observations/observation/create/",
+    formData,
+    {
+      headers,
+    }
+  );
   const data = response.data;
   console.log("data", data);
   return response.data;
@@ -552,7 +600,7 @@ export const PatientAssessmentList = async (id: number) => {
     if (!token) {
       throw new Error("No access token found. Please log in.");
     }
-// const userid=localStorage.getItem("user_id")
+    // const userid=localStorage.getItem("user_id")
     const response = await api.get(`thoughts/patient-thoughts/list/${id}/`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -589,7 +637,6 @@ export const PatientAssessmenttoDoctorList = async (
   const data = response.data.data;
   return response.data;
 };
-
 
 export const DoctorSlotCreate = async (
   formData: any,
@@ -723,10 +770,9 @@ export const DoctorCallMakeList = async (
       ...(token && { Authorization: `Bearer ${token}` }),
     };
 
-    const response = await api.post(
-      "call_doctors/get_assigned_doctors/",
-      { headers }
-    );
+    const response = await api.post("call_doctors/get_assigned_doctors/", {
+      headers,
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to create appointment:", error);
@@ -752,9 +798,13 @@ export const AddOnAiSummry = async (
     "Content-Type": "application/json",
   }
 ) => {
-  const response = await api.post("doctor_observations/preliminary-addons/create/", formData, {
-    headers,
-  });
+  const response = await api.post(
+    "doctor_observations/preliminary-addons/create/",
+    formData,
+    {
+      headers,
+    }
+  );
   const data = response.data;
   return response.data;
 };
@@ -782,9 +832,9 @@ export const GeneratButton = async (
   const data = response.data;
   return response.data;
 };
-export const fetchAddon= async (patient_id: string,) => {
+export const fetchAddon = async (patient_id: string) => {
   const response = await api.get(`doctor_observations/preliminary-addons/`, {
-    params: { patient_id},
+    params: { patient_id },
   });
   return response.data.data;
 };
@@ -807,9 +857,13 @@ export const ApproveAiDiagnosisSummary = async (
     "Content-Type": "application/json",
   }
 ) => {
-  const response = await api.post("accounts/approve_ai_diagnosis_summary/", formData, {
-    headers,
-  });
+  const response = await api.post(
+    "accounts/approve_ai_diagnosis_summary/",
+    formData,
+    {
+      headers,
+    }
+  );
   const data = response.data;
   return response.data;
 };
@@ -833,11 +887,15 @@ export const ApproveButton = async (id: number) => {
       throw new Error("No access token found. Please log in.");
     }
 
-    const response = await api.post(`accounts/approve-user/${id}/`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.post(
+      `accounts/approve-user/${id}/`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     console.log("API response@@@@@@@@@@@@@:", response);
     return response.data;
   } catch (error: any) {
@@ -853,7 +911,7 @@ export const RejectButton = async (id: number) => {
     if (!token) {
       throw new Error("No access token found. Please log in.");
     }
-    const response = await api.post(`accounts/reject-user/${id}/`,  {
+    const response = await api.post(`accounts/reject-user/${id}/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -885,7 +943,7 @@ export const RejectedPatientList = async () => {
     throw error;
   }
 };
-export const AllReportList= async () => {
+export const AllReportList = async () => {
   try {
     const token = localStorage.getItem("access_token");
 
@@ -911,11 +969,15 @@ export const AllPatientReports = async (
     "Content-Type": "application/json",
   }
 ) => {
-  const response = await api.post("senior_function/assigned/patient/diagnosis/list/", formData, {
-    headers,
-  });
+  const response = await api.post(
+    "senior_function/assigned/patient/diagnosis/list/",
+    formData,
+    {
+      headers,
+    }
+  );
   const data = response;
-  console.log("data")
+  console.log("data");
   return response.data;
 };
 export const AppointmentDetailtoPatient = async () => {
@@ -975,7 +1037,7 @@ export const quotesauth = async () => {
   console.log("DoctorObservationPatient", response);
   return [response.data.message];
 };
-export const CountData= async () => {
+export const CountData = async () => {
   try {
     const token = localStorage.getItem("access_token");
 
@@ -993,7 +1055,7 @@ export const CountData= async () => {
     throw error;
   }
 };
-export const CountDataSeniorDashboard= async () => {
+export const CountDataSeniorDashboard = async () => {
   try {
     const token = localStorage.getItem("access_token");
 
@@ -1017,7 +1079,7 @@ export const logout = () => {
   localStorage.removeItem("role");
   localStorage.removeItem("user_id");
   localStorage.removeItem("email");
-   localStorage.removeItem("phoneNo")
+  localStorage.removeItem("phoneNo");
   // Optional: clear everything
   // localStorage.clear();
 };
