@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   patientlist,
   fetchDoctorSlots,
@@ -9,16 +9,25 @@ import {
   AddOnSecondAiSummry,
   ChatEnableApi,
 } from "@/models/auth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
   Calendar,
   CheckCircle,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Download,
   Eye,
   FileText,
+  Search,
   User,
   UserRound,
   X,
@@ -38,6 +47,7 @@ import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import ChatButtonTab from "./ChatButtonTab";
+import { Input } from "@/components/ui/input";
 
 interface Diagnosis {
   diagnosis_summary: string;
@@ -130,8 +140,9 @@ const PatientOverview = () => {
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
 
   const [aiReportDialogOpen, setAiReportDialogOpen] = useState(false);
-  
-  const [aiSecondReportDialogOpen, setAiSecondReportDialogOpen] = useState(false);
+
+  const [aiSecondReportDialogOpen, setAiSecondReportDialogOpen] =
+    useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [addonData, setAddonData] = useState<UserData | null>(null);
   const [checkState, setCheckState] = useState(null);
@@ -141,11 +152,14 @@ const PatientOverview = () => {
   const [addOnObs, setAddOnObs] = useState("");
   const [disease, setDisease] = useState(null);
   const [isApproved, setIsApproved] = useState(false);
-  const [data, setData] = useState(null)
-   const [seconds,setSeconds]=useState(null);
-      const [secondsPdf,setSecondsPdf]=useState<string | null>(null);
-      const [load, setLoad] = useState(false);
-  console.log("setSelectedDate$$$$$$$$$", selectedPatient);
+  const [data, setData] = useState(null);
+  const [seconds, setSeconds] = useState(null);
+  const [secondsPdf, setSecondsPdf] = useState<string | null>(null);
+  const [load, setLoad] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [patientsPerPage] = useState(10);
+  // console.log("setSelectedDate$$$$$$$$$", selectedPatient);
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -194,14 +208,16 @@ const PatientOverview = () => {
       setDisease(lastDiagnosis.id);
       setReportPdf(lastDiagnosis.ai_summary_file);
       setData(lastDiagnosis.ai_report.patient_report.patient_summary);
-         if (selectedPatient.diagnosis.length > 1) {
-      const secondDiagnosis =
-        selectedPatient.diagnosis[selectedPatient.diagnosis.length - 2];
-      console.log("secondDiagnosis", secondDiagnosis.ai_summary_file);
+      if (selectedPatient.diagnosis.length > 1) {
+        const secondDiagnosis =
+          selectedPatient.diagnosis[selectedPatient.diagnosis.length - 2];
+        console.log("secondDiagnosis", secondDiagnosis.ai_summary_file);
 
-      setSeconds(secondDiagnosis.ai_report?.patient_report?.patient_summary || "");
-      setSecondsPdf(secondDiagnosis.ai_summary_file || "");
-    }
+        setSeconds(
+          secondDiagnosis.ai_report?.patient_report?.patient_summary || ""
+        );
+        setSecondsPdf(secondDiagnosis.ai_summary_file || "");
+      }
     }
   }, [selectedPatient]);
 
@@ -427,7 +443,7 @@ const PatientOverview = () => {
   //   }
   // };
   const handleChatEnable = async () => {
-       setLoad(true);
+    setLoad(true);
     try {
       const formData = { patient_id: selectedPatient.id };
       const response = await ChatEnableApi(formData);
@@ -504,6 +520,36 @@ const PatientOverview = () => {
       });
     }
   };
+  const filteredAndPaginatedPatients = useMemo(() => {
+    // Filter patients based on search term
+    const filtered = patients.filter(
+      (patient) =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.id.toString().includes(searchTerm) ||
+        (patient.mobile_number && patient.mobile_number.includes(searchTerm))
+    );
+
+    // Calculate pagination
+    const totalPages = Math.ceil(filtered.length / patientsPerPage);
+    const startIndex = (currentPage - 1) * patientsPerPage;
+    const endIndex = startIndex + patientsPerPage;
+    const paginatedPatients = filtered.slice(startIndex, endIndex);
+
+    return {
+      patients: paginatedPatients,
+      totalPatients: filtered.length,
+      totalPages,
+      currentPage,
+      hasNextPage: currentPage < totalPages,
+      hasPrevPage: currentPage > 1,
+    };
+  }, [patients, searchTerm, currentPage, patientsPerPage]);
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -511,10 +557,27 @@ const PatientOverview = () => {
         <div className="lg:col-span-1">
           <Card className="border-teal-100 shadow-sm h-full">
             <CardHeader className="bg-teal-50 border-b border-teal-100 py-3">
-              <CardTitle className="text-teal-800 flex items-center gap-2">
+              <CardTitle className="text-teal-800 flex items-center gap-3">
                 <UserRound className="h-5 w-5" />
                 Patient Queue
               </CardTitle>
+              {/* Search Bar */}
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Search patients..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-10 border-teal-200 focus:border-teal-500 focus:ring-teal-500"
+                />
+              </div>
+              {/* Results Counter */}
+              {searchTerm && (
+                <div className="text-sm text-gray-600 mt-2">
+                  {filteredAndPaginatedPatients.totalPatients} patient(s) found
+                </div>
+              )}
             </CardHeader>
             <CardContent className="p-0">
               {loading ? (
@@ -524,59 +587,99 @@ const PatientOverview = () => {
               ) : error ? (
                 <div className="p-4 text-red-500 text-center">{error}</div>
               ) : (
-                <ScrollArea className="h-[600px]">
-                  {patients.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">
-                      No patients found
-                    </div>
-                  ) : (
-                    patients.map((patient) => (
-                      <div
-                        key={patient.id}
-                        className={`flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                          selectedPatient?.id === patient.id
-                            ? "bg-teal-50 border-l-4 border-teal-500"
-                            : "border-b"
-                        }`}
-                        onClick={() => {
-                          setSelectedPatient(patient);
-                          setActiveTab("overview");
-                        }}
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium text-teal-700">
-                            {patient.name}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-500">
-                              ID: {patient.id}
-                            </span>
-                            {patient.age && (
-                              <span className="text-xs text-gray-500">
-                                • Age: {patient.age}
-                              </span>
-                            )}
-                          </div>
+                <>
+                  <div className="flex-1">
+                    <ScrollArea className="h-[600px]">
+                      {filteredAndPaginatedPatients.patients.length === 0 ? (
+                        <div className="p-4 text-center text-gray-500">
+                          No patients found
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-teal-600 hover:text-teal-800 hover:bg-teal-50"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPatient(patient);
-                            setActiveTab("overview");
-                          }}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
+                      ) : (
+                        filteredAndPaginatedPatients.patients.map((patient) => (
+                          <div
+                            key={patient.id}
+                            className={`flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
+                              selectedPatient?.id === patient.id
+                                ? "bg-teal-50 border-l-4 border-teal-500"
+                                : "border-b"
+                            }`}
+                            onClick={() => {
+                              setSelectedPatient(patient);
+                              setActiveTab("overview");
+                            }}
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-teal-700">
+                                {patient.name}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-xs text-gray-500">
+                                  ID: {patient.id}
+                                </span>
+                                {patient.age && (
+                                  <span className="text-xs text-gray-500">
+                                    • Age: {patient.age}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-teal-600 hover:text-teal-800 hover:bg-teal-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPatient(patient);
+                                setActiveTab("overview");
+                              }}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </ScrollArea>
+
+                    {filteredAndPaginatedPatients.totalPages > 1 && (
+                      <div className="border-t border-teal-100 p-4 bg-teal-50">
+                        <div className="flex items-center justify-between">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
+                            disabled={!filteredAndPaginatedPatients.hasPrevPage}
+                            className="border-teal-300 text-teal-700 hover:bg-teal-100"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+
+                          <span className="text-sm font-medium text-teal-800 px-2">
+                            Page {currentPage} of{" "}
+                            {filteredAndPaginatedPatients.totalPages}
+                          </span>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage((prev) => prev + 1)}
+                            disabled={!filteredAndPaginatedPatients.hasNextPage}
+                            className="border-teal-300 text-teal-700 hover:bg-teal-100"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        {/* Page Numbers (Optional - for better UX with many pages) */}
                       </div>
-                    ))
-                  )}
-                </ScrollArea>
+                    )}
+                  </div>
+                </>
               )}
             </CardContent>
+            <CardFooter></CardFooter>
           </Card>
         </div>
 
@@ -609,14 +712,16 @@ const PatientOverview = () => {
                         Schedule Appointment
                       </TabsTrigger>
                     </TabsList>
-
-                    {/* Patient Overview Tab */}
+  {/* Patient Overview Tab */}
+                
+                      
                     <TabsContent value="overview" className="mt-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-3">
                             Personal Information
                           </h3>
+                         
                           <div className="space-y-2">
                             <p className="text-sm">
                               <span className="font-medium text-gray-700">
@@ -689,7 +794,8 @@ const PatientOverview = () => {
                           <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-teal-800">
                               AI Diagnosis Summary
-                            </h3><br/>
+                            </h3>
+                            <br />
                             <Button
                               onClick={() => setAiReportDialogOpen(true)}
                               variant="outline"
@@ -697,7 +803,6 @@ const PatientOverview = () => {
                             >
                               View Full AI Report
                             </Button>
-                     
                           </div>
                           <p className="flex text-sm text-gray-600"> {data}</p>
                           <p className="text-gray-600">
@@ -707,19 +812,19 @@ const PatientOverview = () => {
                             {checkState?.Presenting_Complaints}{" "}
                           </p>
                         </div>
-                         <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
+                        <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
                           <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-teal-800">
-                            Second Diagnosis Summary
-                            </h3><br/>
+                              Second Diagnosis Summary
+                            </h3>
+                            <br />
                             <Button
                               onClick={() => setAiSecondReportDialogOpen(true)}
                               variant="outline"
                               className="border-teal-600 text-teal-600 hover:bg-teal-50"
                             >
-                        View Second Assessment Report
+                              View Second Assessment Report
                             </Button>
-                     
                           </div>
                           {/* <p className="flex text-sm text-gray-600"> {seconds}</p> */}
                           <p className="text-gray-600">
@@ -788,8 +893,7 @@ const PatientOverview = () => {
                             disorder. There are concerning indicators of
                             suicidal ideation that require immediate attention
                             and intervention. */}
-                           {checkState?.disease_diagnosed}
-                         
+                            {checkState?.disease_diagnosed}
                           </p>
                         </div>
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
@@ -799,8 +903,7 @@ const PatientOverview = () => {
                           <ul className="text-sm text-gray-600 list-disc ml-4 space-y-1">
                             <li>{checkState?.presenting_complaints}</li>
                             <li>{checkState?.mood_cognition_thought}</li>
-                            <li>{checkState?.patient_goals_expectations}
-                            </li>
+                            <li>{checkState?.patient_goals_expectations}</li>
                             {/* <li>Sleep disturbance</li> */}
                           </ul>
                         </div>
@@ -887,10 +990,10 @@ const PatientOverview = () => {
                             <Button
                               onClick={handleChatEnable}
                               className="bg-teal-600 hover:bg-teal-700"
-                                disabled={load}
+                              disabled={load}
                             >
                               {load ? "Submitting..." : "Chat Enable "}
-                            </Button>  
+                            </Button>
                           )}
                         </div>
                       </div>
@@ -1132,7 +1235,10 @@ const PatientOverview = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Dialog open={aiSecondReportDialogOpen} onOpenChange={setAiSecondReportDialogOpen}>
+      <Dialog
+        open={aiSecondReportDialogOpen}
+        onOpenChange={setAiSecondReportDialogOpen}
+      >
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-center text-teal-800">
