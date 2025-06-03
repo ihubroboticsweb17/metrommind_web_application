@@ -46,11 +46,14 @@ const Index = () => {
       case "psychiatrist":
         navigate("/psychiatrist_dashboard");
         break;
-      case "junior":
-        navigate("/junior_dashboard");
+      case "junior_psychologist":
+        navigate("/junior-pysychology-dashboard");
+        break;
+        case "senior_psychologist":
+        navigate("/senior-pysychology-dashboard");
         break;
       case "admin":
-        navigate("/admin_dashboard");
+        navigate("/admin-dashboard");
         break;
       case "user":
       navigate("/patient-dashboard");
@@ -62,13 +65,13 @@ const Index = () => {
   };
   
   return (
-    <div className={`min-h-screen ${theme !== "default" ? `theme-${theme}` : ""}`}>
+    <div className={` ${theme !== "default" ? `theme-${theme}` : ""}`}>
       <Navbar onLearnMore={handleLearnMore} />
-      <div className="pt-8 pb-6"> {/* Add padding to account for fixed navbar */}
+       <main className="pt-16">
         <HeroSection theme={theme} />
         <FeaturesSection theme={theme} />
+      </main> {/* Add padding to account for fixed navbar */}
       
-      </div>
       <FooterSection theme={theme}/>
     </div>
   );

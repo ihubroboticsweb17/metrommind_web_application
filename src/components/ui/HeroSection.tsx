@@ -206,7 +206,7 @@ const handleSignup  = () => {
                 className={`px-6 py-2.5 rounded-md group font-medium transition-all duration-300 
                   ${getButtonClass()} inline-flex items-center`}
               >
-                Login
+          Sign in
                 <ArrowRight className="inline-block ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             )}

@@ -392,7 +392,7 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader> */}
               <CardContent className="p-0">
-                <AdminDoctorListTab />
+                <AdminDoctorListTab/>
               </CardContent>
             </Card>
           </TabsContent>

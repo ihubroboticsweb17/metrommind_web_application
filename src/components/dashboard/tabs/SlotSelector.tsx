@@ -6,6 +6,7 @@ import { FormEvent } from "react";
 import { AssignDoctorList, DoctorSlotCreate } from "@/models/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/App";
+
 interface Doctor {
   id: number;
   name: string;
@@ -22,11 +23,18 @@ interface Doctor {
   address: string | null;
   patient_id: number | null;
 }
+
 interface DoctorListTabProps {
   patientId: number | null;
   DoctorId: number | null;
 }
-const SlotSelector = () => {
+
+interface SlotSelectorProps {
+  onClose?: () => void; // Function to close the dialog
+  onSlotAdded?: () => void; // Function to refresh slot list
+}
+
+const SlotSelector: React.FC<SlotSelectorProps> = ({ onClose, onSlotAdded }) => {
   const { toast } = useToast();
   const { theme } = useTheme();
   const [doctorList, setDoctorList] = useState<Doctor[]>([]);
@@ -68,6 +76,16 @@ const SlotSelector = () => {
     setUserRole(role);
     fetchAssDoctorlist();
   }, []);
+
+  // Reset form function
+  const resetForm = () => {
+    setDoctor("");
+    setDate("");
+    setFromTime("");
+    setToTime("");
+    setErrorMessage("");
+  };
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent page reload
     const formData = {
@@ -76,6 +94,7 @@ const SlotSelector = () => {
       from_time: fromTime,
       to_time: toTime,
     };
+    
     if (
       ![
         "psychiatrist",
@@ -89,22 +108,40 @@ const SlotSelector = () => {
       );
       return;
     }
+    
     try {
+      setLoading(true);
       const data = await DoctorSlotCreate(formData);
 
       console.log("Registration successful!", data);
       toast({
         variant: "default",
         title: "Success",
-        description: "Slot Create completed!",
+        description: "Slot created successfully!",
       });
-      setLoading(true);
-      setTimeout(() => setLoading(false), 3000);
+      
+    
+      resetForm();
+      
+     
+      if (onSlotAdded) {
+        onSlotAdded();
+      }
+      
+  
+      setTimeout(() => {
+        if (onClose) {
+          onClose();
+        }
+      }, 2500); 
+      
     } catch (error: any) {
       console.error("Slot Create failed:", error);
 
       if (error.response && error.response.data) {
         const errorData = error.response.data;
+        // Handle specific error messages
+        setErrorMessage(errorData.message || "Failed to create slot");
       } else {
         toast({
           variant: "destructive",
@@ -115,73 +152,44 @@ const SlotSelector = () => {
     } finally {
       setLoading(false);
     }
-
-    // try {
-    //   const response = await fetch("http://192.168.1.28:8000/booking/slots/create/", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
-    //     },
-    //     body: JSON.stringify({
-    //       doctor,
-    //       date: Date,
-    //       from_time: fromTime,
-    //       to_time: toTime,
-    //     }),
-    //   });
-
-    //   const result = await response.json();
-    //   if (response.ok) {
-    //     toast({
-    //         title: result.message,
-    //         description: "Slot added successfully!",
-    //       })
-    //     console.log("Slot added successfully:", result);
-    //     // Optionally reset form here
-    //   } else {
-    //     console.error("Failed to add slot:", result);
-    //   }
-    // } catch (error) {
-    //   console.error("An error occurred:", error);
-    // }
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Doctor */}
-        {/* <div className="flex flex-col gap-1">
-      <Label htmlFor="doctor">Doctor</Label>
-      <Input
-        id="doctor"
-        type="text"
-        value={doctor}
-        onChange={(e) => setDoctor(e.target.value)}
-        className="bg-background/50"
-        required
-      />
-    </div> */}
-        <div className="grid gap-2">
-          <Label htmlFor="doctor">Doctor</Label>
-          <select
-            id="doctor"
-            value={doctor}
-            onChange={(e) => setDoctor(e.target.value)}
-            className="bg-background/50 p-2 rounded border"
-            required
-          >
-            <option value="">Select a doctor</option>
-            {doctorList.map((doc) => (
-              <option key={doc.id} value={doc.id}>
-                {doc.name}
+    <form onSubmit={onSubmit} noValidate>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Doctor Selection */}
+        <div className="space-y-2">
+          <Label htmlFor="doctor" className="block text-sm font-medium text-gray-700">
+            Doctor
+          </Label>
+          <div className="relative">
+            <select
+              id="doctor"
+              value={doctor}
+              onChange={(e) => setDoctor(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer hover:border-gray-400 transition-all duration-200 relative z-20"
+              required
+            >
+              <option value="" disabled className="text-gray-500">
+                Select a doctor
               </option>
-            ))}
-          </select>
+              {doctorList.map((doc) => (
+                <option key={doc.id} value={doc.id} className="text-teal-900">
+                  {doc.name} 
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none z-10">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
         </div>
 
         {/* Date */}
-        <div className="flex flex-col gap-1">
+        <div className="space-y-2">
           <Label htmlFor="date">Date</Label>
           <Input
             id="date"
@@ -194,7 +202,7 @@ const SlotSelector = () => {
         </div>
 
         {/* From Time */}
-        <div className="flex flex-col gap-1">
+        <div className="space-y-2">
           <Label htmlFor="from_time">From Time</Label>
           <Input
             id="from_time"
@@ -207,7 +215,7 @@ const SlotSelector = () => {
         </div>
 
         {/* To Time */}
-        <div className="flex flex-col gap-1">
+        <div className="space-y-2">
           <Label htmlFor="to_time">To Time</Label>
           <Input
             id="to_time"
@@ -219,12 +227,27 @@ const SlotSelector = () => {
           />
         </div>
       </div>
-      <div className="gap-2 flex justify-center p-4 ">
-        <Button type="submit" className="w-full group relative overflow-hidden">
-          <span className="absolute inset-0 w-0 transition-all duration-500 h-full bg-gradient-to-r from-primary/80 to-primary"></span>
-          <span className="relative flex items-center justify-center gap-2">
-            Add slot
-          </span>
+      
+      {/* Error Message Display */}
+      {errorMessage && (
+        <div className="text-red-500 text-sm mt-2 p-2 bg-red-50 rounded">
+          {errorMessage}
+        </div>
+      )}
+      
+      <div className="gap-2 flex justify-center p-4">
+        <Button type="submit" className="w-full group relative overflow-hidden" disabled={loading}>
+          {loading ? (
+            <div className="flex items-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Adding Slot...
+            </div>
+          ) : (
+            "Add Slot"
+          )}
         </Button>
       </div>
     </form>

@@ -93,12 +93,18 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center ">
               {/* <img src={Logo} alt="Logo" className="relative z-10 w-14 h-16" /> */}
-                <img 
+                {/* <img 
                   src={Logo} 
                   alt="MetroMind Logo" 
                   className="w-16 h-16 sm:w-12 sm:h-12  object-contain object-center"
-                />
-              
+                /> */}
+              <img 
+  src={Logo} 
+  alt="MetroMind Logo" 
+  width="64" 
+  height="64"
+  className="w-16 h-16 sm:w-12 sm:h-12 object-contain object-center"
+/>
               <span className="text-xl font-bold text-gray-900">MetroMind</span>
             </Link>
           </div>
@@ -136,7 +142,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                           className="flex items-center gap-2 py-2 text-gray-700 hover:text-red-500 transition-colors duration-200 w-full"
                         >
                           <LogOut className="h-4 w-4" />
-                          Logout
+                          Sign out
                         </button>
                       </div>
                     </div>
@@ -150,7 +156,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                 >
                   <Link to="/login" className="flex items-center gap-2">
                     <LogIn className="h-4 w-4" />
-                    Login
+                Sign in
                   </Link>
                 </Button>
               )}
@@ -220,7 +226,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                   className="flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-50"
                 >
                   <LogOut className="h-4 w-4" />
-                  Logout
+                  Sign out
                 </Button>
               </div>
             ) : (
@@ -234,7 +240,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                   className="flex items-center justify-center gap-2"
                 >
                   <LogIn className="h-4 w-4" />
-                  Login
+                  Sign in
                 </Link>
               </Button>
             )}

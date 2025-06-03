@@ -271,7 +271,7 @@ const Register = () => {
     
     if (savedPhone) {
       // Set the mobile number state instead of separate phone state
-      setMobilenumber(savedPhone);
+      // setMobilenumber(savedPhone);
     }
 
     if (savedCountryCode) {
@@ -281,7 +281,7 @@ const Register = () => {
     if (savedFullPhone) {
       setFullPhone(savedFullPhone);
       // If you want to use the full phone number instead of just the number part
-      // setMobilenumber(savedFullPhone);
+      setMobilenumber(savedFullPhone);
     }
   }, []);
 
@@ -385,10 +385,22 @@ const Register = () => {
         </div>
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-2">
-            <img
+            {/* <img
               src={Logo}
               alt={Logo}
               className="relative z-10 w-20 h-20 animate-pulse-subtle"
+            /> */}
+                <img
+              src={Logo}
+              alt="MetroMind Logo"
+              className="relative z-10 w-20 h-20"
+              style={{
+                imageRendering: 'crisp-edges',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                console.error('Logo failed to load:', e);
+              }}
             />
           </div>
           <CardTitle className="text-2xl font-bold text-center">

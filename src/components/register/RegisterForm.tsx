@@ -1052,6 +1052,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <Input 
                 className={`bg-background/50 pr-10 pl-10 ${errors.mobilenumber ? 'border-red-500' : ''}`}
                 id="mobilenumber" 
+                disabled
                 value={mobilenumber} 
                 onChange={(e) => handleFieldChange('mobilenumber', e.target.value)}
                 onBlur={(e) => handleFieldBlur('mobilenumber', e.target.value)}
@@ -1067,7 +1068,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           
  
            <div className="grid gap-2 flex-1">
-            <Label htmlFor="age">Age</Label>
+            <Label htmlFor="age">Age <span className="text-red-800">*</span></Label>
             <div className="relative">
               <CalendarFold className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"/>
               <Input 
@@ -1080,10 +1081,10 @@ const handleSubmit = async (e: React.FormEvent) => {
                 required 
               />
             </div>
-            {/* <ErrorMessage error={errors.age} /> */}
+            <ErrorMessage error={errors.age} />
           </div>
           <div className="grid gap-2 flex-1">
-            <Label htmlFor="gender">Gender</Label>
+            <Label htmlFor="gender">Gender <span className="text-red-800">*</span></Label>
             <select 
               id="gender" 
               value={gender} 
@@ -1096,7 +1097,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
-            {/* <ErrorMessage error={errors.gender} /> */}
+            <ErrorMessage error={errors.gender} />
           </div>
   
         </div>

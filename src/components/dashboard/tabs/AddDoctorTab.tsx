@@ -9,8 +9,10 @@ import AddDoctorForm from "@/components/adddoctor/AddDoctorForm";
 import { Doctorregister } from "@/models/auth";
 interface AddDoctorTabProps {
   onSuccess?: () => void; // Callback to close dialog
+  onLoadingChange?:()=>void;
+   onDoctorAdded?: () => void;
 }
-const AddDoctorTab = ({ onSuccess }: AddDoctorTabProps) => {
+const AddDoctorTab = ({ onSuccess,onLoadingChange,onDoctorAdded }: AddDoctorTabProps) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [mobilenumber, setMobilenumber] = useState("");
@@ -51,15 +53,20 @@ const AddDoctorTab = ({ onSuccess }: AddDoctorTabProps) => {
         title: "Success",
         description: "Registration completed!",
       });
-      //       setTimeout(() => {
-      //   if (onSuccess) {
-      //     onSuccess();
-      //   }
-      // }, 1500);
-      if (typeof onSuccess === "function") {
-        // Execute the callback immediately after toast
-        onSuccess();
-      }
+            setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+              onDoctorAdded();
+        }
+      }, 1500);
+      //  if (typeof onDoctorAdded === "function") {
+      //   onDoctorAdded();
+      // }
+      // if (typeof onSuccess === "function") {
+      //   // Execute the callback immediately after toast
+      //   onSuccess();
+      //   onLoadingChange();
+      // }
     } catch (error: any) {
       console.error("Registration failed:", error);
 

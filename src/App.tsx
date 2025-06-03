@@ -182,7 +182,7 @@ const App = () => {
                 <Route path="/junior-pysychology-dashboard" element={<JunpsychologistDashboard/>} />
                 <Route path="/psychiatrist_dashboard" element={<PsychiatristDashboard/>} /> */}
                 <Route path="*" element={<NotFound />} />
-                <Route path="/chatbot" element={<ProtectedRoute><ChatBotPage /></ProtectedRoute>} />
+                <Route path="/chatbot" element={<ProtectedRoute><ChatBotPage/></ProtectedRoute>} />
                 <Route path="/createDoctor" element={<DoctorCreateForm />} />
                 <Route path="/doctorCallList" element={<DoctorCallList />} />
                 <Route path="/profile/:id" element={<ProfileViewTab/>} />
