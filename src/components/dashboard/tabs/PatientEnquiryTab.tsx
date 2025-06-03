@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
+  ArrowBigLeft,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -516,8 +517,19 @@ const PatientEnquiryTab = () => {
     <div className="container mx-auto p-4">
       <Card className="shadow-md border-teal-200">
         <CardHeader className="bg-teal-50 border-b border-teal-100">
-          <CardTitle className="text-teal-800 text-center">
-            Patient Enquiry Management
+          
+          <CardTitle className="text-teal-800 text-center ">
+          <Button
+          variant="outline"
+          className="border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-600 text-left m-8"
+          onClick={() => window.history.back()}
+        >
+          <ArrowBigLeft /> Back
+        </Button>
+         
+             Patient Enquiry Management 
+         
+          
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">

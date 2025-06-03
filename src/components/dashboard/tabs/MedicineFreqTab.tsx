@@ -8,6 +8,15 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Trash2 } from "lucide-react";
 import { Card} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface Medicine {
   id: number;
@@ -93,7 +102,7 @@ const paginatedData = filteredData.slice(
             </div>
           </div>
 
-          <ul className="space-y-3">
+          {/* <ul className="space-y-3">
             {paginatedData.map((medicine) => (
               <li
                 key={medicine.id}
@@ -118,7 +127,45 @@ const paginatedData = filteredData.slice(
                 </div>
               </li>
             ))}
-          </ul>
+          </ul> */}
+               <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Frequencies</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.map((medicine) => (
+                  <TableRow key={medicine.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-sm">
+                          💊
+                        </div>
+                        <span className="font-medium">{medicine.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {medicine.id}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(medicine.id)}
+                        className="text-gray-500 hover:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           <div className="flex justify-center m-4 gap-2">
   <button
     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

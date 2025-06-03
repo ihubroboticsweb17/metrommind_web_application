@@ -328,7 +328,7 @@ const paginatedData = filteredData.slice(
             /> */}
               <Input
                             type="text"
-                            placeholder="Search Medicines"
+                            placeholder="Search Slot"
                             className="pl-9  border-teal-200 focus:border-teal-500 focus:ring-teal-500"
                             value={searchTerm}
                             onChange={(e) => {
