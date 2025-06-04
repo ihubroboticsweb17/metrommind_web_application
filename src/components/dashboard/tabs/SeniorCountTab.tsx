@@ -68,11 +68,11 @@ const SeniorCountTab = () => {
                   <div className="flex justify-end mb-24">
                     <button
                       // onClick={() => navigate('/patient-enquiry')}
-                        onClick={() => navigate('/patient-enquiry')}
+                        // onClick={() => navigate('/patient-enquiry')}
                       className="flex items-center gap-2 px-2 py-0  text-white rounded-lg transition-colors "
                     >
                       <span>Details</span>
-                      <ArrowRight className="h-5 w-5 text-teal-700" />
+                      {/* <ArrowRight className="h-5 w-5 text-teal-700" /> */}
                     </button>
                   </div>
                 )}

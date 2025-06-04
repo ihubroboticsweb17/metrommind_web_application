@@ -89,6 +89,7 @@ import AddMedicineBrandTab from "@/components/dashboard/tabs/AddMedicineBrandTab
 import MedicineFreqTab from "@/components/dashboard/tabs/MedicineFreqTab";
 import AddMedicineFreqTab from "@/components/dashboard/tabs/AddMedicineFreqTab";
 import AdminPatientRejectListTab from "@/components/dashboard/tabs/AdminPatientRejectListTab";
+import PatientOverview from "@/components/dashboard/tabs/PatientOverview";
 
 // Sample data for charts
 const sessionData = [
@@ -425,6 +426,9 @@ const AdminDashboard = () => {
           </TabsContent> */}
           <TabsContent value="overview" className="space-y-4">
             <AdminCountTab />
+                  <div >
+            <PatientOverview/>
+            </div>
             {/* <div className="grid gap-4 md:grid-cols-2">
               <Card
                 className={`col-span-1 transition-all duration-500 transform ${

@@ -535,6 +535,7 @@ import PsychiatristCountTab from "@/components/dashboard/tabs/PsychiatristCountT
 import AssessmentPsychiatristTab from "@/components/dashboard/tabs/AssesmentPsychiatristTab";
 import AllReportDoctorList from "@/components/dashboard/tabs/AllReportDoctorList";
 import AllReportPatientList from "@/components/dashboard/tabs/AllReportPatientList";
+import SeniorCountTab from "@/components/dashboard/tabs/SeniorCountTab";
 
 interface Patient {
   id: string;
@@ -692,7 +693,8 @@ const PsychiatristDashboard = () => {
           </TabsList>
 
           <TabsContent value="patients" className="space-y-4">
-            <PsychiatristCountTab />
+            {/* <PsychiatristCountTab /> */}
+            <SeniorCountTab/>
             <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white  ">
               <CardHeader className="bg-teal-50 border-b border-teal-100">
                 <div className="flex items-center justify-between">

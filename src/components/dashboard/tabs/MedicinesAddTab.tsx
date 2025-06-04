@@ -1,366 +1,4 @@
-// // import { useToast } from "@/hooks/use-toast";
-// import { useToast } from "@/hooks/use-toast";
-// import {
-//   MedicineBrandlist,
-//   MedicineFreqList,
-//   MedicineList,
-//   MedicinesAdd,
-//   patientlist,
-// } from "@/models/auth";
-// import React, { useEffect, useState } from "react";
 
-// interface MedicineForm {
-//   medicine: string;
-//   brand: string;
-//   frequency: string;
-//   strength: string;
-//   dosage: string;
-//   uom: string;
-//   route: string;
-//   period: string;
-//   quantity: string;
-//   remarks: string;
-//   medicineName?: string; // To store the selected medicine name for display
-// }
-
-// interface MedicinesAddTabProps {
-//   onSuccess?: () => void; // Optional callback for when medicine is added successfully
-// }
-
-// const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
-//   const { toast } = useToast();
-//   const [medicines, setMedicines] = useState<MedicineForm[]>([
-//     {
-//       medicine: "",
-//       brand: "",
-//       frequency: "",
-//       strength: "",
-//       dosage: "",
-//       uom: "",
-//       route: "",
-//       period: "",
-//       quantity: "",
-//       remarks: "",
-//       medicineName: "",
-//     },
-//   ]);
-
-//   const [medicin, setMedicin] = useState([]);
-//   const [brands, setBrands] = useState([]);
-//   const [frequencies, setFrequencies] = useState([]);
-//   const [user, setUser] = useState([]);
-//   const [patient, setPatient] = useState("");
-//   const [expandedMedicine, setExpandedMedicine] = useState<number | null>(0);
-
-//   const addNewMedicine = () => {
-//     setMedicines([
-//       ...medicines,
-//       {
-//         medicine: "",
-//         brand: "",
-//         frequency: "",
-//         strength: "",
-//         dosage: "",
-//         uom: "",
-//         route: "",
-//         period: "",
-//         quantity: "",
-//         remarks: "",
-//         medicineName: "",
-//       },
-//     ]);
-//     // Set the newly added medicine as expanded
-//     setExpandedMedicine(medicines.length);
-//   };
-
-//   const handleFieldChange = (
-//     index: number,
-//     field: keyof MedicineForm,
-//     value: string
-//   ) => {
-//     const updated = [...medicines];
-//     updated[index][field] = value;
-    
-//     // If medicine field is updated, store the medicine name for display
-//     if (field === "medicine") {
-//       const selectedMedicine = medicin.find((item: any) => item.id === value);
-//       updated[index].medicineName = selectedMedicine ? selectedMedicine.name : "";
-//     }
-    
-//     setMedicines(updated);
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     try {
-//       const payload = {
-//         patient,
-//         medicines,
-//       };
-
-//       await MedicinesAdd(payload);
-
-//       toast({
-//         title: "Success",
-//         description: "Medicine Created successfully!",
-//       });
-
-//       // Reset form
-//       setMedicines([
-//         {
-//           medicine: "",
-//           brand: "",
-//           frequency: "",
-//           strength: "",
-//           dosage: "",
-//           uom: "",
-//           route: "",
-//           period: "",
-//           quantity: "",
-//           remarks: "",
-//           medicineName: "",
-//         },
-//       ]);
-//       setPatient("");
-//       setExpandedMedicine(0);
-      
-//       // Call the onSuccess callback if provided
-//       if (onSuccess) {
-//         onSuccess();
-//       }
-//     } catch (error) {
-//       toast({
-//         title: "Error",
-//         description: "Failed to add medicine",
-//         variant: "destructive",
-//       });
-//     }
-//   };
-
-//   const toggleMedicineExpand = (index: number) => {
-//     setExpandedMedicine(expandedMedicine === index ? null : index);
-//   };
-
-//   const removeMedicine = (index: number) => {
-//     const updatedMedicines = [...medicines];
-//     updatedMedicines.splice(index, 1);
-//     setMedicines(updatedMedicines);
-    
-//     // Adjust expanded medicine index if needed
-//     if (expandedMedicine === index) {
-//       setExpandedMedicine(index > 0 ? index - 1 : 0);
-//     } else if (expandedMedicine !== null && expandedMedicine > index) {
-//       setExpandedMedicine(expandedMedicine - 1);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const fetchDropdownData = async () => {
-//       try {
-//         const meds = await MedicineList();
-//         const brds = await MedicineBrandlist();
-//         const freqs = await MedicineFreqList();
-//         const patien = await patientlist();
-//         setMedicin(meds);
-//         setBrands(brds);
-//         setFrequencies(freqs);
-//         setUser(patien);
-//       } catch (error) {
-//         console.error("Dropdown fetch failed", error);
-//       }
-//     };
-//     fetchDropdownData();
-//   }, []);
-
-//   return (
-//     <div className="max-w-4xl mx-auto p-4 max-h-[80vh] overflow-y-auto bg-white rounded-lg shadow-md">
-//       <h2 className="text-xl font-bold mb-6 text-center">Add Prescription</h2>
-
-//       <form onSubmit={handleSubmit}>
-//         {/* Patient Selection First */}
-//         <div className="mb-6 p-4 border rounded shadow-sm bg-gray-50">
-//           <label className="block mb-2 font-medium">Select Patient</label>
-//           <select
-//             name="patient"
-//             onChange={(e) => setPatient(e.target.value)}
-//             value={patient}
-//             className="border rounded px-3 py-2 w-full"
-//             required
-//           >
-//             <option value="">Select Patient</option>
-//             {user.map((item: any) => (
-//               <option key={item.id} value={item.id}>
-//                 {item.name}
-//               </option>
-//             ))}
-//           </select>
-//         </div>
-
-//         {/* Medicine List Summary */}
-//         <div className="mb-6">
-//           <h3 className="text-lg font-semibold mb-3">Prescribed Medicines</h3>
-          
-//           {medicines.map((med, idx) => (
-//             <div 
-//               key={idx} 
-//               className="border rounded-lg mb-4 overflow-hidden"
-//             >
-//               {/* Medicine Header/Summary - Always visible */}
-//               <div 
-//                 className="flex justify-between items-center p-3 bg-gray-100 cursor-pointer"
-//                 onClick={() => toggleMedicineExpand(idx)}
-//               >
-//                 <div className="font-medium">
-//                   Medicine {idx + 1}: {med.medicineName || "Not selected yet"}
-//                 </div>
-//                 <div className="flex gap-2">
-//                   <button 
-//                     type="button" 
-//                     onClick={(e) => {
-//                       e.stopPropagation();
-//                       removeMedicine(idx);
-//                     }}
-//                     className="text-red-500 hover:text-red-700 px-2"
-//                   >
-//                     Remove
-//                   </button>
-//                   <span className="text-blue-600">
-//                     {expandedMedicine === idx ? "▲" : "▼"}
-//                   </span>
-//                 </div>
-//               </div>
-
-//               {/* Expanded medicine form */}
-//               {expandedMedicine === idx && (
-//                 <div className="p-4 border-t">
-//                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                     <select
-//                       name="medicine"
-//                       onChange={(e) => handleFieldChange(idx, "medicine", e.target.value)}
-//                       value={med.medicine}
-//                       className="border rounded px-3 py-2"
-//                       required
-//                     >
-//                       <option value="">Select Medicine</option>
-//                       {medicin.map((item: any) => (
-//                         <option key={item.id} value={item.id}>
-//                           {item.name}
-//                         </option>
-//                       ))}
-//                     </select>
-
-//                     <select
-//                       name="brand"
-//                       onChange={(e) => handleFieldChange(idx, "brand", e.target.value)}
-//                       value={med.brand}
-//                       className="border rounded px-3 py-2"
-//                       required
-//                     >
-//                       <option value="">Select Brand</option>
-//                       {brands.map((item: any) => (
-//                         <option key={item.id} value={item.id}>
-//                           {item.name}
-//                         </option>
-//                       ))}
-//                     </select>
-
-//                     <select
-//                       name="frequency"
-//                       onChange={(e) => handleFieldChange(idx, "frequency", e.target.value)}
-//                       value={med.frequency}
-//                       className="border rounded px-3 py-2"
-//                       required
-//                     >
-//                       <option value="">Select Frequencies</option>
-//                       {frequencies.map((item: any) => (
-//                         <option key={item.id} value={item.id}>
-//                           {item.name}
-//                         </option>
-//                       ))}
-//                     </select>
-
-//                     <input
-//                       placeholder="Strength"
-//                       className="border rounded px-3 py-2"
-//                       value={med.strength}
-//                       onChange={(e) => handleFieldChange(idx, "strength", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="Dosage"
-//                       className="border rounded px-3 py-2"
-//                       value={med.dosage}
-//                       onChange={(e) => handleFieldChange(idx, "dosage", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="UOM"
-//                       className="border rounded px-3 py-2"
-//                       value={med.uom}
-//                       onChange={(e) => handleFieldChange(idx, "uom", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="Route"
-//                       className="border rounded px-3 py-2"
-//                       value={med.route}
-//                       onChange={(e) => handleFieldChange(idx, "route", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="Period (days)"
-//                       type="number"
-//                       className="border rounded px-3 py-2"
-//                       value={med.period}
-//                       onChange={(e) => handleFieldChange(idx, "period", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="Quantity"
-//                       type="number"
-//                       className="border rounded px-3 py-2"
-//                       value={med.quantity}
-//                       onChange={(e) => handleFieldChange(idx, "quantity", e.target.value)}
-//                       required
-//                     />
-//                     <input
-//                       placeholder="Remarks"
-//                       type="text"
-//                       className="border rounded px-3 py-2 col-span-1 md:col-span-2"
-//                       value={med.remarks}
-//                       onChange={(e) => handleFieldChange(idx, "remarks", e.target.value)}
-//                     />
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//           ))}
-//         </div>
-
-//         <div className="flex justify-between items-center">
-//           <button
-//             type="button"
-//             onClick={addNewMedicine}
-//             className="text-white bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded flex items-center"
-//           >
-//             <span className="mr-1">+</span> Add Medicine
-//           </button>
-
-//           <button
-//             type="submit"
-//             className="bg-teal-600 text-white hover:bg-teal-700 px-6 py-2 rounded"
-//             disabled={!patient || medicines.length === 0}
-//           >
-//             SUBMIT PRESCRIPTION
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default MedicinesAddTab;
 import { useToast } from "@/hooks/use-toast";
 import {
   AssignDoctorPatientList,
@@ -418,8 +56,113 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
 
   const addNewMedicine = () => {
+    const newMedicineIndex = medicines.length;
     setMedicines([
       ...medicines,
+      {
+        medicine: "",
+        brand: "",
+        frequency: "",
+        strength: "",
+        dosage: "",
+        uom: "",
+        route: "",
+        period: "",
+        quantity: "",
+        remarks: "",
+        medicineName: "", // This will be updated when medicine is selected
+      },
+    ]);
+    setExpandedMedicine(newMedicineIndex); // Auto-expand the newly added medicine
+  };
+
+  const handleFieldChange = (
+    index: number,
+    field: keyof MedicineForm,
+    value: string
+  ) => {
+    const updated = [...medicines];
+    updated[index][field] = value;
+    
+    // Update medicine name when medicine is selected
+    if (field === "medicine" && value) {
+      const selectedMedicine = medicin.find((item: any) => item.id === value);
+      updated[index].medicineName = selectedMedicine ? selectedMedicine.name : "";
+    }
+    
+    setMedicines(updated);
+  };
+
+  // Helper function to get display text for medicine header
+  const getMedicineDisplayText = (med: MedicineForm, index: number) => {
+    if (med.medicineName) {
+      return med.medicineName;
+    }
+    if (med.medicine) {
+      // Fallback: try to find medicine name if medicineName is not set
+      const selectedMedicine = medicin.find((item: any) => item.id === med.medicine);
+      return selectedMedicine ? selectedMedicine.name : "Medicine selected";
+    }
+    return "Not selected";
+  };
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    // Find the selected patient object to get the correct patient ID
+    const selectedPatientObj = user.find((item: any) => item.id.toString() === patient);
+    
+    if (!selectedPatientObj) {
+      throw new Error("Please select a valid patient");
+    }
+
+    // Use the actual patient ID from the patient object
+    const actualPatientId = selectedPatientObj.patient?.id || selectedPatientObj.patient_id;
+    
+    if (!actualPatientId) {
+      throw new Error("Patient ID not found. Please contact support.");
+    }
+
+    // Validate all medicines have required fields
+    const validatedMedicines = medicines.map((med, index) => {
+      if (!med.medicine || !med.brand || !med.frequency) {
+        throw new Error(`Medicine ${index + 1}: Please fill all required fields`);
+      }
+
+      return {
+        medicine: parseInt(med.medicine),
+        brand: parseInt(med.brand),
+        frequency: parseInt(med.frequency),
+        strength: med.strength.trim(),
+        dosage: med.dosage.trim(),
+        uom: med.uom.trim(),
+        route: med.route.trim(),
+        period: parseInt(med.period),
+        quantity: parseInt(med.quantity),
+        remarks: med.remarks.trim(),
+        is_active: true
+      };
+    });
+
+    const payload = {
+      patient: actualPatientId, // Use the actual patient ID
+      medicines: validatedMedicines,
+    };
+
+    console.log("Sending payload:", payload);
+    console.log("Selected patient object:", selectedPatientObj);
+
+    await MedicinesAdd(payload);
+
+    toast({
+      title: "Success",
+      description: "Prescription created successfully!",
+    });
+
+    // Reset form
+    setMedicines([
       {
         medicine: "",
         brand: "",
@@ -434,73 +177,24 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
         medicineName: "",
       },
     ]);
-    setExpandedMedicine(medicines.length);
-  };
-
-  const handleFieldChange = (
-    index: number,
-    field: keyof MedicineForm,
-    value: string
-  ) => {
-    const updated = [...medicines];
-    updated[index][field] = value;
+    setPatient("");
+    setExpandedMedicine(0);
     
-    if (field === "medicine") {
-      const selectedMedicine = medicin.find((item: any) => item.id === value);
-      updated[index].medicineName = selectedMedicine ? selectedMedicine.name : "";
+    if (onSuccess) {
+      onSuccess();
     }
+  } catch (error: any) {
+    console.error("Submit error:", error);
     
-    setMedicines(updated);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const payload = {
-        patient,
-        medicines,
-      };
-
-      await MedicinesAdd(payload);
-
-      toast({
-        title: "Success",
-        description: "Medicine Created successfully!",
-      });
-
-      setMedicines([
-        {
-          medicine: "",
-          brand: "",
-          frequency: "",
-          strength: "",
-          dosage: "",
-          uom: "",
-          route: "",
-          period: "",
-          quantity: "",
-          remarks: "",
-          medicineName: "",
-        },
-      ]);
-      setPatient("");
-      setExpandedMedicine(0);
-      
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add medicine",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast({
+      title: "Error",
+      description: error.message || "Failed to add prescription",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const toggleMedicineExpand = (index: number) => {
     setExpandedMedicine(expandedMedicine === index ? null : index);
@@ -539,8 +233,6 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
 
   return (
     <div className="w-full mx-auto p-3 sm:p-4 max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-lg">
-      <h2 className="text-xl font-bold mb-4 text-center text-teal-800">Add Prescription</h2>
-
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Patient Selection */}
         <motion.div 
@@ -559,8 +251,7 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
             <option value="">Select Patient</option>
             {user.map((item: any) => (
               <option key={item.id} value={item.id}>
-                
-                {item.patient.name}
+                {item.patient?.name || item.patient_name || `Patient ID: ${item.patient?.id}`}
               </option>
             ))}
           </select>
@@ -583,7 +274,7 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
               transition={{ delay: idx * 0.1 }}
               className="border border-indigo-200 rounded-lg mb-3 overflow-hidden"
             >
-              {/* Medicine Header */}
+              {/* Medicine Header - Updated this section */}
               <div 
                 className={`flex justify-between items-center p-3 ${
                   expandedMedicine === idx 
@@ -593,7 +284,7 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
                 onClick={() => toggleMedicineExpand(idx)}
               >
                 <div className={`font-medium ${expandedMedicine === idx ? 'text-white' : 'text-gray-800'}`}>
-                  Medicine {idx + 1}: {med.medicineName || "Not selected"}
+                  Medicine {idx + 1}: {getMedicineDisplayText(med, idx)}
                 </div>
                 <div className="flex gap-2 items-center">
                   <button 
@@ -711,7 +402,7 @@ const MedicinesAddTab: React.FC<MedicinesAddTabProps> = ({ onSuccess }) => {
                       <div>
                         <label className="text-xs text-gray-500 block mb-1">UOM*</label>
                         <input
-                          placeholder="Unit of measurement"
+                          placeholder="Unit of measurement "
                           className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition"
                           value={med.uom}
                           onChange={(e) => handleFieldChange(idx, "uom", e.target.value)}
