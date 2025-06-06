@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import Ani from "../../../assets/json/logoAni.json"
+
 type Message = {
   id: number;
   sender: 'user' | 'therapist';
@@ -23,12 +24,51 @@ const Chatbox = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [reportGenerated, setReportGenerated] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-  // Scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  // Load existing chat history for follow-up sessions
+  const loadChatHistory = async (sessionId: string) => {
+    const token = localStorage.getItem("access_token");
+    
+    if (!token) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`https://metromind-web-backend-euh0gkdwg9deaudd.uaenorth-01.azurewebsites.net/accounts/get-chat-history/${sessionId}/`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Convert backend chat history to frontend message format
+        if (data.messages && Array.isArray(data.messages)) {
+          const formattedMessages: Message[] = data.messages.map((msg: any, index: number) => ({
+            id: Date.now() + index,
+            sender: msg.sender === 'user' ? 'user' : 'therapist',
+            text: msg.message || msg.text,
+            timestamp: msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            status: msg.sender === 'user' ? 'sent' : undefined,
+          }));
+          
+          setMessages(formattedMessages);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading chat history:", error);
+      // Don't show error toast for history loading as it's not critical
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -39,8 +79,60 @@ const Chatbox = () => {
     const storedSessionId = localStorage.getItem("chat_section_id");
     if (storedSessionId) {
       setSessionId(storedSessionId);
+      // Load existing chat history for follow-up sessions
+      loadChatHistory(storedSessionId);
+    }
+
+    // Check if report was already generated
+    const reportStatus = localStorage.getItem("ai_report_generated");
+    if (reportStatus === "true") {
+      setReportGenerated(true);
     }
   }, []);
+
+  // Prevent browser back button navigation
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (!reportGenerated) {
+        // Push the current state back to prevent navigation
+        window.history.pushState(null, '', window.location.pathname);
+        
+        // Show warning toast
+        toast({
+          title: "Report Required",
+          description: "Please generate your AI report before leaving this page.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Push initial state
+    window.history.pushState(null, '', window.location.pathname);
+    
+    // Add event listener
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [reportGenerated, toast]);
+
+  // Block page refresh/close without report
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!reportGenerated && messages.length > 0) {
+        event.preventDefault();
+        event.returnValue = 'You have an incomplete session. Generate your AI report before leaving.';
+        return event.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [reportGenerated, messages.length]);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === "" || isLoading) return;
@@ -110,6 +202,9 @@ const Chatbox = () => {
       }
       
       if (data?.switch_press === true) {
+        // Mark report as generated before navigation
+        setReportGenerated(true);
+        localStorage.setItem("ai_report_generated", "true");
         navigate("/patient-dashboard");
       }
     } catch (error: any) {
@@ -125,6 +220,16 @@ const Chatbox = () => {
   };
 
   const handleGenerateClick = async () => {
+    // Check if there are messages to generate report from
+    if (messages.length === 0) {
+      toast({
+        title: "No Conversation",
+        description: "Please have a conversation first before generating a report.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const token = localStorage.getItem("access_token");
 
     if (!token) {
@@ -161,6 +266,10 @@ const Chatbox = () => {
 
       const data = await response.json();
       
+      // Mark report as generated
+      setReportGenerated(true);
+      localStorage.setItem("ai_report_generated", "true");
+      
       if (data?.switch_press === true) {
         navigate("/patient-dashboard");
       }
@@ -193,13 +302,36 @@ const Chatbox = () => {
       <div className="absolute top-4 right-4 z-10">
         <Button
           onClick={handleGenerateClick}
-          disabled={isLoading}
-          className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl disabled:opacity-50"
+          disabled={isLoading || messages.length === 0}
+          className={`px-4 py-2 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl disabled:opacity-50 ${
+            messages.length === 0 
+              ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+              : 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white'
+          }`}
         >
           <Sparkles className="h-4 w-4 mr-2" />
           Generate Report
+          {!reportGenerated && messages.length > 0 && (
+            <span className="ml-2 inline-flex h-2 w-2 rounded-full bg-red-400 animate-pulse"></span>
+          )}
         </Button>
       </div>
+
+      {/* Warning Banner for incomplete session */}
+      {messages.length > 0 && !reportGenerated && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-4 mt-4 rounded-r-lg">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <Sparkles className="h-5 w-5 text-yellow-400" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                <strong>Session in progress:</strong> Don't forget to generate your AI report before leaving this page.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
@@ -214,6 +346,9 @@ const Chatbox = () => {
               </h3>
               <p className="text-sm text-muted-foreground">
                 I'm here to help you. Ask me anything about your mental health and wellbeing.
+              </p>
+              <p className="text-xs text-yellow-600 mt-4 bg-yellow-50 p-2 rounded-lg inline-block">
+                💡 You'll need to have a conversation before you can generate your AI report
               </p>
             </div>
           )}
@@ -233,7 +368,6 @@ const Chatbox = () => {
                   }
                 `}>
                   {message.sender === 'user' ? <User className="h-4 w-4" /> : 
-                  // <Bot className="h-4 w-4" />
                      <Lottie animationData={Ani} loop style={{ width: 80, height: 80 }} />
                   }
                 </AvatarFallback>
@@ -292,7 +426,7 @@ const Chatbox = () => {
                   handleSendMessage();
                 }
               }}
-              disabled={isLoading}
+              // disabled={isLoading}
               className="pr-12 bg-muted/30 border-border/30 focus:bg-background focus:border-teal-500/50 transition-all duration-200"
             />
             <Button
@@ -305,7 +439,12 @@ const Chatbox = () => {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground/60 mt-2 text-center">
-            Press Enter to send, or click Generate Report to create your wellness summary
+            {messages.length === 0 
+              ? "Start by typing a message to begin your wellness conversation"
+              : !reportGenerated 
+                ? "Press Enter to send, or click Generate Report to create your wellness summary"
+                : "Session complete! Your report has been generated."
+            }
           </p>
         </div>
       </div>
