@@ -1080,6 +1080,8 @@ export const logout = () => {
   localStorage.removeItem("user_id");
   localStorage.removeItem("email");
   localStorage.removeItem("phoneNo");
+  localStorage.removeItem("phoneNo");
+  localStorage.removeItem("chat_section_id");
   // Optional: clear everything
   // localStorage.clear();
 };
