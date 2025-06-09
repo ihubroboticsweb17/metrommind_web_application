@@ -643,7 +643,7 @@ const Chatbox = () => {
                   handleSendMessage();
                 }
               }}
-              disabled={isLoading}
+              // disabled={isLoading}
               className="pr-12 bg-muted/30 border-border/30 focus:bg-background focus:border-teal-500/50 transition-all duration-200"
             />
             <Button
