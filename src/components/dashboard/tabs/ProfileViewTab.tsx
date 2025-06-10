@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MedicinesAddTab from "./MedicinesAddTab";
 import { useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +19,7 @@ import {
 } from "@/models/auth";
 import {
   ArrowBigLeft,
+  ClipboardList,
 
 } from "lucide-react";
 import { 
@@ -39,10 +41,37 @@ import {
 import PatientMedicinesList from "./PatientMedicinesList";
 
 import MedicineTable from "./MedicineTab";
+import { Label } from "recharts";
 
 interface Medicine {
   id: number;
   name: string;
+}
+interface Patient {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  mobile_number: string;
+  age: number;
+  gender: string;
+  occupation: string;
+  education: string;
+  address: string;
+  patient_id: string;
+}
+interface PatientAssignment  {
+  id: number;
+  doctor: any; 
+  patient: Patient;
+  assigned_at: string;
+  patient_diagnosis: any[];
+  ai_summary?: any;
+  doctor_name?: string;
+  doctor_role?: string;
+  is_active?: boolean;
+  observations?: string;
+  session?: string;
 }
 
 export default function ProfileViewTab() {
@@ -58,7 +87,11 @@ export default function ProfileViewTab() {
   const [observationText, setObservationText] = useState("");
   const [editText, setEditText] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
+   const [successMsga, setSuccessMsga] = useState("");
+  const [assignments, setAssignments] = useState<PatientAssignment[]>([]);
+   const [savingAssessment, setSavingAssessment] = useState(false);
+   const [assessment, setAssessment] = useState("");
+   const [selectedPatient, setSelectedPatient] = useState<PatientAssignment | null>(null);
   const fetchMedicineAssignList = async () => {
     try {
       setLoading(true);
@@ -176,6 +209,55 @@ export default function ProfileViewTab() {
       setLoading(false);
     }
   };
+  const handleSaveAssessment = async () => {
+  if (!patientData || !assessment.trim()) {
+    alert("Assessment text is required");
+    return;
+  }
+  
+  setSavingAssessment(true);
+  
+  try {
+    const formData = { 
+      patient: patientData?.patient?.id,
+      question_text: assessment
+    };
+    
+    const response = await DoctorAssessmenttoPatient(formData);
+    
+    if (response?.data?.status === "ok") {
+       setSuccessMsga("Assessment added successfully!");
+      // Update local state
+      setAssignments(prev => prev.map(assignment => 
+        assignment.id === patientData?.patient?.id 
+          ? { ...assignment, observations: assessment }
+          : assignment
+      ));
+      
+   
+    } else {
+     
+        toast({
+          title: "Success",
+          description: "Assessment created successfully",
+        })
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  
+       toast({
+          title: "Failed",
+          description: "Failed to save assessment",
+        })
+  } finally {
+    // Always close the dialog and reset state
+    setSavingAssessment(false);
+    setIsDialogOpen(false);
+    setAssessment("");
+    setSelectedPatient(null);
+  }
+};
+
   return (
     <div className="max-w-2xl mx-auto p-2 space-y-4 bg-gray-50 min-h-screen">
          <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
@@ -269,7 +351,61 @@ export default function ProfileViewTab() {
             </div>
           </div>
         </div>
-
+ <div className="bg-white rounded-2xl shadow-xl border border-teal-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-teal-500 to-cyan-500 p-4 text-white">
+            <div className="flex items-center gap-3">
+              <FileText className="w-5 h-5" />
+              <h2 className="text-lg font-semibold">Doctor Assessment</h2>
+            </div>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            <div>
+              <label 
+                htmlFor="observation-textarea" 
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+            Add/Update Assessment
+              </label>
+               <Textarea
+                                id="assessment"
+                                value={assessment}
+                                onChange={(e) => setAssessment(e.target.value)}
+                                placeholder="Enter your assessment..."
+                                className="min-h-32 border-teal-200 focus:border-teal-500 focus:ring-teal-500"
+                              />
+              <div className="flex justify-between items-center mt-2">
+                <p className="text-sm text-gray-500">
+                  {assessment.length}/500 characters
+                </p>
+                {successMsg && (
+                  <p className="text-green-600 text-sm font-medium flex items-center gap-1">
+                    <Check className="w-4 h-4" />
+                    {successMsg}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <Button
+              onClick={handleSaveAssessment}
+              disabled={loading || !assessment.trim()}
+              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-medium py-2.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Activity className="w-4 h-4 animate-spin" />
+                  Saving Assessment...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add Assessment
+                </div>
+              )}
+            </Button>
+          </div>
+              </div>
         {/* Observation Section - Enhanced */}
         <div className="bg-white rounded-2xl shadow-xl border border-teal-100 overflow-hidden">
           <div className="bg-gradient-to-r from-teal-500 to-cyan-500 p-4 text-white">
@@ -327,7 +463,47 @@ export default function ProfileViewTab() {
               )}
             </Button>
           </div>
-        </div>
+              </div>
+          {/* Doctor Assessment Section
+                        <Card className="border-teal-100">
+                          <CardHeader className="bg-teal-50">
+                            <CardTitle className="text-teal-800 flex items-center gap-2">
+                              <ClipboardList className="h-5 w-5" />
+                              Doctor Assessment
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-6">
+                            <div className="space-y-4">
+                              <Label className="text-base font-medium text-gray-700">
+                                Add/Update Assessment
+                              </Label>
+                              <Textarea
+                                id="assessment"
+                                value={assessment}
+                                onChange={(e) => setAssessment(e.target.value)}
+                                placeholder="Enter your assessment, observations, or treatment notes..."
+                                className="min-h-32 border-teal-200 focus:border-teal-500 focus:ring-teal-500"
+                              />
+                              <div className="flex justify-end gap-2">
+                                <Button 
+                                  variant="outline" 
+                                  onClick={() => setIsDialogOpen(false)}
+                                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                                >
+                                  Cancel
+                                </Button>
+                                <Button 
+                                  onClick={handleSaveAssessment}
+                                  disabled={savingAssessment}
+                                  className="bg-teal-500 hover:bg-teal-600 text-white"
+                                >
+                                  {savingAssessment ? "Saving..." : "Save Assessment"}
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card> */}
+    
 
         {/* Action Buttons - Enhanced */}
         {/* <div className="flex flex-col sm:flex-row gap-4 justify-end">

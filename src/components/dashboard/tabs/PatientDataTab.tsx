@@ -30,6 +30,7 @@ import {
   patientDetails,
   PdfSowInPatientDashboard,
   PatientAssessmentList,
+  PatientAssessmentUpdate,
 } from "@/models/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PatientAppointments from "./PatientAppointments";
@@ -78,8 +79,8 @@ interface DiagnosisData {
 
 interface AssessmentQuestion {
   id: number;
-  question: string;
-  answer: string;
+  question_text: string;
+  response_text: string;
   created_at: string;
 }
 
@@ -117,6 +118,9 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
+const [editingId, setEditingId] = useState<number | null>(null);
+const [editValue, setEditValue] = useState<string>("");
+const [updateLoading, setUpdateLoading] = useState<number | null>(null);
 
   // Helper function to safely access patient summary
   const getSafePatientSummary = (chatData: DiagnosisData | null) => {
@@ -393,7 +397,89 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
 
     return "No patient summary available";
   };
+//   const handleEditStart = (item: AssessmentQuestion) => {
+//   setEditingId(item.id);
+//   setEditValue(item.response_text);
+// };
 
+// const handleEditCancel = () => {
+//   setEditingId(null);
+//   setEditValue("");
+// };
+// const handleEditSave = async (id: number) => {
+//   if (!editValue.trim()) return;
+  
+//   setUpdateLoading(id);
+//   try {
+//     await PatientAssessmentUpdate(id, editValue.trim());
+    
+//     // Update local state
+//     setAssessmentData(prev => 
+//       prev.map(item => 
+//         item.id === id 
+//           ? { ...item, response_text: editValue.trim() }
+//           : item
+//       )
+//     );
+ 
+//      toast({
+//         title: "Success",
+//         description:    "response added successfully",
+//         variant: "destructive",
+//       });
+//     setEditingId(null);
+//     setEditValue("");
+
+//   } catch (error) {
+//       toast({
+//         title: "Error",
+//         description: "Error updating assessment",
+//         variant: "destructive",
+//       });
+//     console.error("Error updating assessment:", error);
+//     // You might want to show an error message to user
+//   } finally {
+//     setUpdateLoading(null);
+//   }
+// };
+const handleEditStart = (item: AssessmentQuestion) => {
+  // Only allow editing if response_text is null or empty
+  if (!item.response_text || item.response_text.trim() === '') {
+    setEditingId(item.id);
+    setEditValue(item.response_text || '');
+  }
+};
+
+const handleEditCancel = () => {
+  setEditingId(null);
+  setEditValue("");
+};
+
+const handleEditSave = async (id: number) => {
+  if (!editValue.trim()) return;
+  
+  setUpdateLoading(id);
+  try {
+    await PatientAssessmentUpdate(id, editValue.trim());
+    
+    // Update local state
+    setAssessmentData(prev => 
+      prev.map(item => 
+        item.id === id 
+          ? { ...item, response_text: editValue.trim() }
+          : item
+      )
+    );
+    
+    setEditingId(null);
+    setEditValue("");
+  } catch (error) {
+    console.error("Error updating assessment:", error);
+    // You might want to show an error message to user
+  } finally {
+    setUpdateLoading(null);
+  }
+};
   const summaryText = getPatientSummary();
   const isChatEnabled = patientData?.chat_enabled;
   console.log("isChatEnabled@@@@@@@@@@@", isChatEnabled);
@@ -604,7 +690,7 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
               </CardContent>
             </TabsContent> */}
 
-            <TabsContent value="assessment" className="p-0">
+            {/* <TabsContent value="assessment" className="p-0">
               <CardContent className="p-6">
                 <CardTitle className="text-lg mb-4 text-gray-800">
                   Assessment Questions
@@ -624,10 +710,10 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
                       >
                         <div className="space-y-2">
                           <p className="font-semibold text-gray-700 text-sm">
-                            Q{index + 1}: {item.question}
+                            Q{index + 1}: {item.question_text}
                           </p>
                           <p className="text-gray-600 text-sm bg-gray-50 rounded p-2">
-                            {item.answer}
+                            {item.response_text}
                           </p>
                           <p className="text-xs text-gray-400">
                             {new Date(item.created_at).toLocaleDateString()}
@@ -642,7 +728,191 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
                   </div>
                 )}
               </CardContent>
-            </TabsContent>
+            </TabsContent> */}
+            {/* <TabsContent value="assessment" className="p-0">
+  <CardContent className="p-6">
+    <CardTitle className="text-lg mb-4 text-gray-800">
+      Assessment Questions
+    </CardTitle>
+    {assessmentLoading ? (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-teal-500 border-t-transparent"></div>
+      </div>
+    ) : error ? (
+      <div className="text-red-500 text-center py-4">{error}</div>
+    ) : assessmentData.length > 0 ? (
+      <div className="space-y-4 max-h-96 overflow-y-auto">
+        {assessmentData.map((item, index) => (
+          <div
+            key={item.id}
+            className="bg-white/70 rounded-lg p-4 shadow-sm border border-gray-200"
+          >
+            <div className="space-y-2">
+              <p className="font-semibold text-gray-700 text-sm">
+                Q{index + 1}: {item.question_text}
+              </p>
+              
+              {editingId === item.id ? (
+                // Edit mode
+                <div className="space-y-2">
+                  <textarea
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    rows={3}
+                    placeholder="Enter your answer..."
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditSave(item.id)}
+                      disabled={updateLoading === item.id || !editValue.trim()}
+                      className="px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                      {updateLoading === item.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
+                    </button>
+                    <button
+                      onClick={handleEditCancel}
+                      disabled={updateLoading === item.id}
+                      className="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View mode
+                <div className="flex justify-between items-start gap-2">
+                  <p className="text-gray-600 text-sm bg-gray-50 rounded p-2 flex-1">
+                    {item.response_text}
+                  </p>
+                  <button
+                    onClick={() => handleEditStart(item)}
+                    className="px-2 py-1 text-xs text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
+                    title="Edit answer"
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+              
+              <p className="text-xs text-gray-400">
+                {new Date(item.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-gray-500 text-center py-8">
+        No assessment questions available
+      </div>
+    )}
+  </CardContent>
+</TabsContent> */}
+<TabsContent value="assessment" className="p-0">
+  <CardContent className="p-6">
+    <CardTitle className="text-lg mb-4 text-gray-800">
+      Assessment Questions
+    </CardTitle>
+    {assessmentLoading ? (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-teal-500 border-t-transparent"></div>
+      </div>
+    ) : error ? (
+      <div className="text-red-500 text-center py-4">{error}</div>
+    ) : assessmentData.length > 0 ? (
+      <div className="space-y-4 max-h-96 overflow-y-auto">
+        {assessmentData.map((item, index) => (
+          <div
+            key={item.id}
+            className="bg-white/70 rounded-lg p-4 shadow-sm border border-gray-200"
+          >
+            <div className="space-y-2">
+              <p className="font-semibold text-gray-700 text-sm">
+                Q{index + 1}: {item.question_text}
+              </p>
+              
+              {editingId === item.id ? (
+                // Edit mode
+                <div className="space-y-2">
+                  <textarea
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    rows={3}
+                    placeholder="Enter your answer..."
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditSave(item.id)}
+                      disabled={updateLoading === item.id || !editValue.trim()}
+                      className="px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                      {updateLoading === item.id ? (
+                        <>
+                          <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
+                    </button>
+                    <button
+                      onClick={handleEditCancel}
+                      disabled={updateLoading === item.id}
+                      className="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // View mode
+                <div className="flex justify-between items-start gap-2">
+                  {item.response_text && item.response_text.trim() !== '' ? (
+                    // Has answer - show answer only
+                    <p className="text-gray-600 text-sm bg-gray-50 rounded p-2 flex-1">
+                      {item.response_text}
+                    </p>
+                  ) : (
+                    // No answer - show placeholder and edit button
+                    <>
+                      <p className="text-gray-400 text-sm bg-gray-50 rounded p-2 flex-1 italic">
+                        No answer provided yet
+                      </p>
+                      <button
+                        onClick={() => handleEditStart(item)}
+                        className="px-2 py-1 text-xs text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
+                        title="Add answer"
+                      >
+                        Answer
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+              
+              <p className="text-xs text-gray-400">
+                {new Date(item.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-gray-500 text-center py-8">
+        No assessment questions available
+      </div>
+    )}
+  </CardContent>
+</TabsContent>
           </Tabs>
         </Card>
 

@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import {
   AddOnAiSummry,
@@ -389,7 +388,12 @@ const PatientEnquiryTab = () => {
         });
         setLoading(true);
         setIsApprovedpatientList(true);
-
+        setPatients((prevPatients) =>
+          prevPatients.filter((patient) => patient.id !== id)
+        );
+        if (selectedPatient?.id === id) {
+          setSelectedPatient(null);
+        }
         // Update patient-specific state
         updatePatientState(id, {
           isApproved: true,
@@ -531,56 +535,56 @@ const PatientEnquiryTab = () => {
          
           
           </CardTitle>
-        </CardHeader> */} 
-<div className="relative">
-  {/* Floating Back Button */}
-  <div className="absolute top-4 left-4 z-10">
-    <Button
-      variant="secondary"
-      size="sm"
-      className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white border border-teal-200 text-teal-700 hover:text-teal-900"
-      onClick={() => window.history.back()}
-    >
-      <ArrowBigLeft className="w-4 h-4 mr-1" />
-      Back
-    </Button>
-  </div>
-  
-  <CardHeader className="bg-gradient-to-br from-teal-500 to-teal-600 text-white pt-16 pb-8">
-    <div className="text-center">
-      <CardTitle className="text-teal-100 text-3xl font-bold mb-2">
-        Patient Enquiry Management
-      </CardTitle>
-      {/* <p className="text-teal-100 text-lg opacity-90">
+        </CardHeader> */}
+        <div className="relative">
+          {/* Floating Back Button */}
+          <div className="absolute top-4 left-4 z-10">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="shadow-lg bg-white/90 backdrop-blur-sm hover:bg-white border border-teal-200 text-teal-700 hover:text-teal-900"
+              onClick={() => window.history.back()}
+            >
+              <ArrowBigLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+          </div>
+
+          <CardHeader className="bg-gradient-to-br from-teal-500 to-teal-600 text-white pt-16 pb-8">
+            <div className="text-center">
+              <CardTitle className="text-teal-100 text-3xl font-bold mb-2">
+                Patient Enquiry Management
+              </CardTitle>
+              {/* <p className="text-teal-100 text-lg opacity-90">
         AI-Powered Patient Assessment Dashboard
       </p> */}
-      
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-          <div className="text-2xl font-bold">{patients.length}</div>
-          <div className="text-sm text-teal-100">Total Enquiries</div>
+
+              {/* Statistics Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                  <div className="text-2xl font-bold">{patients.length}</div>
+                  <div className="text-sm text-teal-100">Total Enquiries</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                  <div className="text-2xl font-bold">
+                    {patients.filter((p) => p.diagnosis?.length > 0).length}
+                  </div>
+                  <div className="text-sm text-teal-100">AI Assessments</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                  <div className="text-2xl font-bold">
+                    {patients.filter((p) => !p.diagnosis?.length).length}
+                  </div>
+                  <div className="text-sm text-teal-100">Pending Review</div>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
         </div>
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-          <div className="text-2xl font-bold">
-            {patients.filter(p => p.diagnosis?.length > 0).length}
-          </div>
-          <div className="text-sm text-teal-100">AI Assessments</div>
-        </div>
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-          <div className="text-2xl font-bold">
-            {patients.filter(p => !p.diagnosis?.length).length}
-          </div>
-          <div className="text-sm text-teal-100">Pending Review</div>
-        </div>
-      </div>
-    </div>
-  </CardHeader>
-</div>
         <CardContent className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Panel - Patient List */}
-         
+
             <div className="lg:col-span-1">
               <Card className="border-teal-100 shadow-sm h-full">
                 <CardHeader className="bg-teal-50 border-b border-teal-100 py-3">

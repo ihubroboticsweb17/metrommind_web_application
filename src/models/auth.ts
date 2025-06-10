@@ -593,6 +593,52 @@ export const PatientChat = async (message: string, sessionId: string) => {
 
 //   return response.data;
 // };
+// export const PatientAssessmentAdd = async (id: number) => {
+//   try {
+//     const token = localStorage.getItem("access_token");
+
+//     if (!token) {
+//       throw new Error("No access token found. Please log in.");
+//     }
+//     // const userid=localStorage.getItem("user_id")
+//     const response = await api.patch(`/thoughts/thoughts/update/${id}/`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     return response.data;
+//   } catch (error: any) {
+//     console.error("Error :", error);
+//     throw error;
+//   }
+// };
+export const PatientAssessmentUpdate = async (id: number, responseText: string) => {
+  try {
+    const token = localStorage.getItem("access_token");
+    
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+
+    const response = await api.patch(`/thoughts/thoughts/update/${id}/`, 
+      {
+        response_text: responseText, // Send the updated response text
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error updating assessment:", error);
+    throw error;
+  }
+};
 export const PatientAssessmentList = async (id: number) => {
   try {
     const token = localStorage.getItem("access_token");
@@ -963,6 +1009,23 @@ export const AllReportList = async () => {
     throw error;
   }
 };
+export const DoctorCallvoxbay = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post(
+    "voxbay/click-to-call/",
+    formData,
+    {
+      headers,
+    }
+  );
+  const data = response;
+  console.log("data");
+  return response.data;
+};
 export const AllPatientReports = async (
   formData: any,
   headers = {
@@ -1020,7 +1083,7 @@ export const AvailableDoctorsList = async () => {
       throw new Error("No access token found. Please log in.");
     }
 
-    const response = await api.get("accounts/available-doctors-patient/", {
+    const response = await api.get("accounts/available-doctors/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1032,6 +1095,7 @@ export const AvailableDoctorsList = async () => {
     throw error;
   }
 };
+
 export const quotesauth = async () => {
   const response = await api.get(`accounts/quotes/`);
   console.log("DoctorObservationPatient", response);

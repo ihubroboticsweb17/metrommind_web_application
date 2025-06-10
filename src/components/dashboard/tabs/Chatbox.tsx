@@ -541,7 +541,7 @@ const Chatbox = () => {
       </div>
 
       {/* Debug Button (remove in production) */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-4 left-4 z-10">
           <Button
             onClick={debugLocalStorage}
@@ -551,7 +551,7 @@ const Chatbox = () => {
             Debug Storage
           </Button>
         </div>
-      )}
+      )} */}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">

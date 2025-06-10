@@ -98,7 +98,7 @@ const JuniorCountTab = () => {
         const data = await CountData();
         setCount(data);
       } catch (err) {
-        setError("Failed to load Count.");
+        setError("No data found");
       } finally {
         setLoading(false);
       }
@@ -114,7 +114,7 @@ const JuniorCountTab = () => {
         </div>
       ) : error ? (
         <div className="col-span-4 text-center py-10">
-          <div className="text-red-500">{error}</div>
+          <div className="text-gray-500">{error}</div>
         </div>
       ) : (
         count.map((item, index) => {

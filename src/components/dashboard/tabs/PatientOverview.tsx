@@ -159,6 +159,7 @@ const PatientOverview = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [patientsPerPage] = useState(10);
+   const [isConformpatientList, setIsConformpatientList] = useState(false);
   // console.log("setSelectedDate$$$$$$$$$", selectedPatient);
   useEffect(() => {
     const fetchPatients = async () => {
@@ -171,7 +172,7 @@ const PatientOverview = () => {
         console.log("pdffile", pdffile);
         setPdfUrl(pdffile);
       } catch (err) {
-        setError("Failed to load patients.");
+        setError("No data found.");
         toast({
           title: "Error",
           description: "Failed to load patient data.",
@@ -298,6 +299,12 @@ const PatientOverview = () => {
 
         // Reset appointment form
         setActiveTab("overview");
+            setPatients((prevPatients) =>
+          prevPatients.filter((patient) => patient.id !== selectedPatient.id)
+        );
+        if (selectedPatient?.id === selectedPatient.id) {
+          setSelectedPatient(null);
+        }
       } else {
         toast({
           title: "Failed",
@@ -447,7 +454,7 @@ const PatientOverview = () => {
     try {
       const formData = { patient_id: selectedPatient.id };
       const response = await ChatEnableApi(formData);
-
+console.log("response",response)
       if (response.status === "true") {
         toast({
           title: "Success",
@@ -701,7 +708,7 @@ const PatientOverview = () => {
               ) : (
                 <div className="space-y-6">
                   <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className="w-full">
+                    {/* <TabsList className="w-full">
                       <TabsTrigger value="overview" className="flex-1">
                         Patient Details
                       </TabsTrigger>
@@ -711,11 +718,22 @@ const PatientOverview = () => {
                       <TabsTrigger value="appointment" className="flex-1">
                         Schedule Appointment
                       </TabsTrigger>
-                    </TabsList>
+                    </TabsList> */}
+                    <TabsList className="w-full grid grid-cols-1 sm:grid-cols-3 gap-1">
+  <TabsTrigger value="overview" className="text-sm sm:text-base">
+    Patient Details
+  </TabsTrigger>
+  <TabsTrigger value="diagnosis" className="text-sm sm:text-base">
+    AI Diagnosis
+  </TabsTrigger>
+  <TabsTrigger value="appointment" className="text-sm sm:text-base">
+    Schedule Appointment
+  </TabsTrigger>
+</TabsList>
   {/* Patient Overview Tab */}
                 
                       
-                    <TabsContent value="overview" className="mt-4">
+                    <TabsContent value="overview" className="mt-14">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-3">
@@ -823,7 +841,7 @@ const PatientOverview = () => {
                               variant="outline"
                               className="border-teal-600 text-teal-600 hover:bg-teal-50"
                             >
-                              View Second Assessment Report
+                              View Second Ai Report
                             </Button>
                           </div>
                           {/* <p className="flex text-sm text-gray-600"> {seconds}</p> */}
@@ -881,7 +899,7 @@ const PatientOverview = () => {
                     </Dialog>
 
                     {/* AI Diagnosis Tab */}
-                    <TabsContent value="diagnosis" className="mt-4">
+                    <TabsContent value="diagnosis" className="mt-14">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-3">
@@ -1000,7 +1018,7 @@ const PatientOverview = () => {
                     </TabsContent>
 
                     {/* Appointment Scheduling Tab */}
-                    <TabsContent value="appointment" className="mt-4">
+                    <TabsContent value="appointment" className="mt-16">
                       <div className="space-y-6">
                         <div className="bg-white p-6 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-4 flex items-center gap-2">
