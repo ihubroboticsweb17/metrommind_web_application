@@ -16,6 +16,8 @@ import {
   PillBottle,
   BriefcaseMedical,
   Cross,
+  MessageSquare,
+  MessageSquareText,
 } from "lucide-react";
 import {
   Card,
@@ -90,6 +92,7 @@ import MedicineFreqTab from "@/components/dashboard/tabs/MedicineFreqTab";
 import AddMedicineFreqTab from "@/components/dashboard/tabs/AddMedicineFreqTab";
 import AdminPatientRejectListTab from "@/components/dashboard/tabs/AdminPatientRejectListTab";
 import PatientOverview from "@/components/dashboard/tabs/PatientOverview";
+import AdminPromptTab from "@/components/dashboard/tabs/AdminPromptTab";
 
 // Sample data for charts
 const sessionData = [
@@ -303,7 +306,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-3">
-          <TabsList className="grid grid-cols-5 sm:w-[800px] w-full gap-1">
+          <TabsList className="grid grid-cols-6 sm:w-[800px] w-full gap-1">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg gap-2"
@@ -336,7 +339,7 @@ const AdminDashboard = () => {
               {/* <Pill className="h-8 w-8" /> */}
               <BriefcaseMedical className="h-4 w-4" />
 
-              <span className="hidden sm:inline">Medicine Stock</span>
+              <span className="hidden sm:inline">Stock</span>
             </TabsTrigger>
             {/* <TabsTrigger
               value="aiengine"
@@ -352,6 +355,14 @@ const AdminDashboard = () => {
             >
               <Cross className="h-4 w-4" />
               <span className="hidden sm:inline">Reject List</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="prompt"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg gap-2"
+            >
+              {" "}
+              <MessageSquareText className="h-4 w-4" />
+              <span className="hidden sm:inline">Prompt</span>
             </TabsTrigger>
           </TabsList>
 
@@ -393,7 +404,7 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader> */}
               <CardContent className="p-0">
-                <AdminDoctorListTab/>
+                <AdminDoctorListTab />
               </CardContent>
             </Card>
           </TabsContent>
@@ -421,13 +432,20 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="prompt" className="space-y-6">
+            <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white">
+              <CardContent className="p-0">
+                <AdminPromptTab />
+              </CardContent>
+            </Card>
+          </TabsContent>
           {/* <TabsContent value="overview" className="space-y-4">
             <OwlCarouselComponent/
           </TabsContent> */}
           <TabsContent value="overview" className="space-y-4">
             <AdminCountTab />
-                  <div >
-            <PatientOverview/>
+            <div>
+              <PatientOverview />
             </div>
             {/* <div className="grid gap-4 md:grid-cols-2">
               <Card

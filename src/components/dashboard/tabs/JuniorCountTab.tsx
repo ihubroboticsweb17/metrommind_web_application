@@ -55,6 +55,7 @@ const JuniorCountTab = () => {
     style={{ transitionDelay: `${item.delay}ms` }}
   >
     <CardHeader className="flex flex-row items-center justify-between pb-2">
+        
       <CardTitle className="text-sm font-bold text-teal-800">
         {item.key}
       </CardTitle>
@@ -65,13 +66,12 @@ const JuniorCountTab = () => {
     <CardContent>
       <div className="text-3xl font-bold text-gray-800 mb-1">{item.value}</div>
       {isLastItem && (
-        <div className="flex justify-end mb-24">
+        <div className="flex justify-end mb-18">
           <button
             onClick={() => navigate('/patient-enquiry')}
-            className="flex items-center gap-2 px-2 py-0 text-white rounded-lg transition-colors"
-          >
-            <span>Details</span>
-            <ArrowRight className="h-5 w-5 text-teal-700" />
+            className="flex items-center gap-2 px-2 py-0  text-teal rounded-lg transition-colors"
+          >    
+            <ArrowRight className="h-4 w-4  text-teal-700" />
           </button>
         </div>
       )}

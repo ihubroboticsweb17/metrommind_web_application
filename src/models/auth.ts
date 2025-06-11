@@ -1026,6 +1026,23 @@ export const DoctorCallvoxbay = async (
   console.log("data");
   return response.data;
 };
+export const DoctorCallvoxbayCreat = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post(
+    "voxbay/api/voxbay/create/",
+    formData,
+    {
+      headers,
+    }
+  );
+  const data = response;
+  console.log("data");
+  return response.data;
+};
 export const AllPatientReports = async (
   formData: any,
   headers = {

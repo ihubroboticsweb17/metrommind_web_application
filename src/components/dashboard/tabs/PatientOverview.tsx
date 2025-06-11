@@ -186,16 +186,7 @@ const PatientOverview = () => {
     fetchPatients();
   }, [toast, loading]);
 
-  // useEffect(() => {
-  //   if (
-  //     selectedPatient?.diagnosis?.length > 0 &&
-  //     selectedPatient.diagnosis[0].ai_report?.therapist_report
-  //   ) {
-  //     setCheckState(selectedPatient.diagnosis[0].ai_report.therapist_report);
-  //     setDisease(selectedPatient.diagnosis[0].id);
-  //     setReportPdf(selectedPatient.diagnosis[0].ai_summary_file);
-  //   }
-  // }, [selectedPatient]);
+
   useEffect(() => {
     if (
       selectedPatient?.diagnosis?.length > 0 &&
@@ -320,29 +311,7 @@ const PatientOverview = () => {
       });
     }
   };
-  // const handleAiSummary = async (patient_id:number,diagnosis_id:number) => {
 
-  //   try {
-  //     const slots = await fetchAddon(selectedPatient.id,)
-  //     setAddonData()
-
-  //     if (slots.length === 0) {
-  //       toast({
-  //         title: "No Available Slots",
-  //         description: `No slots available for Dr. ${assignedDoctor.name} on ${format(new Date(date), "MMMM d, yyyy")}.`,
-  //         variant: "destructive",
-  //       })
-  //     }
-  //   } catch (err) {
-  //     console.error("Failed to fetch slots:", err)
-  //     setAvailableSlots([])
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to fetch available slots.",
-  //       variant: "destructive",
-  //     })
-  //   }
-  // }
   const handleApprove = async (id: number) => {
     try {
       const response = await ApproveButton(id);
@@ -365,32 +334,7 @@ const PatientOverview = () => {
       console.error("Approval error:", error);
     }
   };
-  //  const handleGenerate = async (userId: number) => {
-  //     if (!userId) return
 
-  //     try {
-  //       const formData = { user: userId }
-  //       const response = await GeneratButton(formData)
-  //       if (response.status === "ok") {
-  //         toast({
-  //           title: "Success",
-  //           description: "AI report generated successfully",
-  //         })
-
-  //         setPdfUrl(response.file_url)
-  //         // setGeneratedStatus((prev) => ({ ...prev, [userId]: true }))
-  //       } else {
-  //         throw new Error(response.message || "Unknown error.")
-  //       }
-  //     } catch (err) {
-  //       console.error("PDF generation failed", err)
-  //       toast({
-  //         title: "Error",
-  //         description: "Failed to generate AI report",
-  //         variant: "destructive",
-  //       })
-  //     }
-  //   }
   const handleSubmitSecondTherapistNotes = async () => {
     if (!selectedPatient) return;
 
@@ -427,28 +371,7 @@ const PatientOverview = () => {
       });
     }
   };
-  // const handleChatEnable = async () => {
-  //   try {
-  //     const formData = { patient_id: selectedPatient.id };
-  //     const response = await ChatEnableApi(formData);
-  //     if (response.status === "true") {
-  //       toast({
-  //         title: "Success",
-  //         description: "AI chat enabled"
-  //       });
-  //       setIsApproved(true);
-  //     } else {
-  //       throw new Error(response.message || "Unknown error.");
-  //     }
-  //   } catch (err) {
-  //     console.error("chat generation failed", err);
-  //     toast({
-  //       title: "Error",
-  //       description: "AI chat is already enabled",
-  //       variant: "destructive",
-  //     });
-  //   }
-  // };
+
   const handleChatEnable = async () => {
     setLoad(true);
     try {
@@ -483,28 +406,7 @@ console.log("response",response)
       });
     }
   };
-  //   const handleChatEnable= async (id:number) => {
-  //  try {
-  //       const response = await ChatEnableApi (id);
-  //       console.log("API response########:", response);
 
-  //       if (response.status === "ok") {
-  //         toast({
-  //           title: "AI Approve Successful",
-  //           description: response.message,
-  //         });
-  //         setLoading(true);
-  //       } else {
-  //         throw new Error(response.message || "Unknown error.");
-  //       }
-  //     } catch (error) {
-  //       toast({
-  //         title: "Approval failed",
-  //         description: error?.message || "Something went wrong",
-  //       });
-  //       console.error("Approval error:", error);
-  //     }
-  //   }
   const handleChatDisable = async () => {
     try {
       const formData = { patient_id: selectedPatient.id };
@@ -708,17 +610,7 @@ console.log("response",response)
               ) : (
                 <div className="space-y-6">
                   <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    {/* <TabsList className="w-full">
-                      <TabsTrigger value="overview" className="flex-1">
-                        Patient Details
-                      </TabsTrigger>
-                      <TabsTrigger value="diagnosis" className="flex-1">
-                        AI Diagnosis
-                      </TabsTrigger>
-                      <TabsTrigger value="appointment" className="flex-1">
-                        Schedule Appointment
-                      </TabsTrigger>
-                    </TabsList> */}
+                
                     <TabsList className="w-full grid grid-cols-1 sm:grid-cols-3 gap-1">
   <TabsTrigger value="overview" className="text-sm sm:text-base">
     Patient Details
@@ -906,11 +798,7 @@ console.log("response",response)
                             Disease Diagnosis
                           </h3>
                           <p className="text-sm text-gray-600">
-                            {/* The patient presents with symptoms consistent with
-                            major depressive disorder and generalized anxiety
-                            disorder. There are concerning indicators of
-                            suicidal ideation that require immediate attention
-                            and intervention. */}
+                          
                             {checkState?.disease_diagnosed}
                           </p>
                         </div>
@@ -1239,17 +1127,7 @@ console.log("response",response)
             >
               <Download className="w-4 h-4 mr-2" /> Download
             </Button>
-            {/* <div className="space-x-2">
-                    <Button 
-                    variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
-                      <X className="w-4 h-4 mr-1" /> Reject
-                    </Button>
-                    <Button 
-                    className="bg-green-600 text-white hover:bg-green-700" 
-                    onClick={handleApproveReport}>
-                      <CheckCircle className="w-4 h-4 mr-1" /> Approve
-                    </Button>
-                  </div> */}
+      
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1293,42 +1171,7 @@ console.log("response",response)
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* <Dialog open={aiReportDialogOpen} onOpenChange={setAiReportDialogOpen} >
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-center text-teal-800">Complete AI Assessment Report</DialogTitle>
-          </DialogHeader>
-          <div className="max-w-full mx-auto p-4 rounded-xl border bg-white">
-            <h2 className="text-lg font-semibold mb-4">Patient Assessment Summary</h2>
-            {pdfUrl ? (
-              <iframe src={pdfUrl} title="AI Report PDF" width="100%" height="100%" className="border-0"></iframe>
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
-              </div>
-            )}
-
-            <Separator className="my-4" />
-
-            <div className="flex justify-between items-center ">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <Download className="w-4 h-4 mr-2" /> Download Report
-              </Button>
-              <div className="space-x-2">
-                <Button variant="outline" className="text-red-600 border-red-600 hover:bg-red-50">
-                  <X className="w-4 h-4 mr-1" /> Reject
-                </Button>
-                <Button className="bg-green-600 text-white hover:bg-green-700"
-                onClick={() => handleApprove(selectedPatient.id)}>
-                  <CheckCircle className="w-4 h-4 mr-1" /> Approve to second stage
-                </Button>
-              </div>
-            </div>
-          </div>
-        
-        </DialogContent>
-        
-      </Dialog> */}
+      
     </div>
   );
 };

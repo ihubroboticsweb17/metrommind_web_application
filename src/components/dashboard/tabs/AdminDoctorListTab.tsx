@@ -39,6 +39,7 @@ import {
   Loader2,
   ChevronRight,
   ChevronLeft,
+  PhoneIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -48,7 +49,12 @@ import AddDoctorTab from "./AddDoctorTab";
 import SlotSelector from "./SlotSelector";
 import { useToast } from "@/hooks/use-toast";
 
-
+interface DoctorCallFormData {
+  staff: string;
+  did_no: string;
+  ext_no: string;
+  emp_code: string;
+}
 // Helper function to format role display
 const formatRole = (role) => {
   return role
@@ -83,6 +89,7 @@ const getRoleBadgeColor = (role) => {
 const AdminDoctorListTab = () => {
     const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpenvox, setIsDialogOpenvox] = useState(false);
   const [isAddDoctorDialogOpen, setIsAddDoctorDialogOpen] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -96,6 +103,13 @@ const AdminDoctorListTab = () => {
  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [errors, setErrors] = useState<Partial<DoctorCallFormData>>({});
+  const [formData, setFormData] = useState<DoctorCallFormData>({
+    staff: '',
+    did_no: '',
+    ext_no: '',
+    emp_code: ''
+  });
   // Check if the screen is mobile size
   useEffect(() => {
     const checkIfMobile = () => {
@@ -212,8 +226,29 @@ const AdminDoctorListTab = () => {
     }
   };
 
-
-
+ const handleInputChange = (field: keyof DoctorCallFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+  const handleReset = () => {
+    setFormData({
+      staff: '',
+      did_no: '',
+      ext_no: '',
+      emp_code: ''
+    });
+    setErrors({});
+  };
   
    useEffect(() => {
     const total = Math.ceil(filteredDoctors.length / itemsPerPage);
@@ -326,13 +361,14 @@ const AdminDoctorListTab = () => {
           </div>
 
           {/* Table Header - Hidden on mobile */}
-          <div className="hidden md:grid md:grid-cols-6 bg-teal-50 p-3 rounded-t-lg text-sm font-medium text-teal-800">
+          <div className="hidden md:grid md:grid-cols-7 bg-teal-50 p-3 rounded-t-lg text-sm font-medium text-teal-800">
             <div className="pl-2">Sl.No</div>
             <div>Name</div>
             <div>Role</div>
             <div>Doctor ID</div>
             <div>Call Available</div>
-            <div></div>
+            <div>Voxbay Details</div>
+            <div>Action</div>
           </div>
 
           {/* Loading state */}
@@ -400,7 +436,7 @@ const AdminDoctorListTab = () => {
                 {getPaginatedDoctors().map((doc, index) => (
                   <div
                     key={doc.id}
-                    className="md:grid md:grid-cols-6 p-4 flex flex-col text-sm items-start md:items-center hover:bg-teal-50/50 transition-colors"
+                    className="md:grid md:grid-cols-7 p-4 flex flex-col text-sm items-start md:items-center hover:bg-teal-50/50 transition-colors"
                   >
                     {/* Mobile view doctor card */}
                     <div className="flex items-center justify-between w-full md:hidden mb-3">
@@ -479,7 +515,19 @@ const AdminDoctorListTab = () => {
                         className="data-[state=checked]:bg-teal-600"
                       />
                     </div>
-                    <div className="hidden md:block text-right">
+                    <div className="">
+                      <Button
+                      // variant="outline"
+                        size="sm"
+                        className="border-teal-200 text-white hover:bg-teal-50 hover:text-teal-700 hover:border-teal-300"
+                        onClick={() => {
+                          setSelectedDoctor(doc);
+                          setIsDialogOpenvox(true);
+                        }}>
+Add 
+                      </Button>
+                    </div>
+                    <div className="">
                       <Button
                         variant="outline"
                         size="sm"
@@ -615,7 +663,7 @@ const AdminDoctorListTab = () => {
                 </div>
 
                 {/* Call availability in profile */}
-                <div className="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
+                {/* <div className="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
                   <Label htmlFor={`call-toggle-profile-${selectedDoctor.id}`} className="text-sm font-medium text-teal-700">
                     Call Available
                   </Label>
@@ -632,7 +680,7 @@ const AdminDoctorListTab = () => {
                    
                     />
                   </div>
-                </div>
+                </div> */}
 
                 <div className="space-y-3 border-t border-b border-teal-100 py-4">
                   <div className="flex items-center">
@@ -764,6 +812,119 @@ const AdminDoctorListTab = () => {
   }}/>
         </DialogContent>
       </Dialog>
+      <Dialog open={isDialogOpenvox} onOpenChange={setIsDialogOpenvox}>
+  <DialogContent className="sm:max-w-md p-0 max-h-[90vh] overflow-y-auto">
+    <DialogHeader className="bg-teal-50 border-b border-teal-100 p-4">
+      <DialogTitle className="text-center text-teal-800 flex items-center justify-center">
+        <PhoneIcon className="mr-2 h-5 w-5"/>
+        Add Voxbay Details
+      </DialogTitle>
+    </DialogHeader>  
+    
+    <div className="p-4 space-y-4">
+      {/* Staff Field */}
+      <div className="">
+        <label htmlFor="staff" className="block text-sm font-medium text-gray-700 mb-2">
+          Staff *
+        </label>
+        <input
+          id="staff"
+          type="text"
+          value={formData.staff}
+          onChange={(e) => handleInputChange('staff', e.target.value)}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+            errors.staff ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Enter staff name"
+          disabled={loading}
+        />
+        {errors.staff && (
+          <p className="text-red-500 text-xs mt-1">{errors.staff}</p>
+        )}
+      </div>
+
+      {/* DID Number Field */}
+      <div>
+        <label htmlFor="did_no" className="block text-sm font-medium text-gray-700 mb-2">
+          DID Number *
+        </label>
+        <input
+          id="did_no"
+          type="text"
+          value={formData.did_no}
+          onChange={(e) => handleInputChange('did_no', e.target.value)}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+            errors.did_no ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Enter DID number"
+          disabled={loading}
+        />
+        {errors.did_no && (
+          <p className="text-red-500 text-xs mt-1">{errors.did_no}</p>
+        )}
+      </div>
+
+      {/* Extension Number Field */}
+      <div>
+        <label htmlFor="ext_no" className="block text-sm font-medium text-gray-700 mb-2">
+          Extension Number *
+        </label>
+        <input
+          id="ext_no"
+          type="text"
+          value={formData.ext_no}
+          onChange={(e) => handleInputChange('ext_no', e.target.value)}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+            errors.ext_no ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Enter extension number"
+          disabled={loading}
+        />
+        {errors.ext_no && (
+          <p className="text-red-500 text-xs mt-1">{errors.ext_no}</p>
+        )}
+      </div>
+
+      {/* Employee Code Field */}
+      <div>
+        <label htmlFor="emp_code" className="block text-sm font-medium text-gray-700 mb-2">
+          Employee Code *
+        </label>
+        <input
+          id="emp_code"
+          type="text"
+          value={formData.emp_code}
+          onChange={(e) => handleInputChange('emp_code', e.target.value)}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+            errors.emp_code ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Enter employee code"
+          disabled={loading}
+        />
+        {errors.emp_code && (
+          <p className="text-red-500 text-xs mt-1">{errors.emp_code}</p>
+        )}
+      </div>
+    </div>
+    
+    <DialogFooter className="bg-gray-50 border-t border-gray-200 flex gap-3 pt-4 p-4">
+      <Button
+        variant="outline"
+        className="text-red-600 hover:bg-red-50 hover:border-red-300"
+        onClick={() => setIsDialogOpenvox(false)}
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        disabled={loading}
+      >
+        {loading ? 'Creating...' : 'Create'}
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </div>
   );
 };
