@@ -60,30 +60,30 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
     });
   };
 
-  // Determine dashboard link based on user role
+  // Determine dashboard link based on user role - FIXED VERSION
   const getDashboardLink = () => {
     if (!role) return "/dashboard";
-
     switch (role) {
-     
-         case "user":
-        navigate("/patient-dashboard");
-       
+      case "user":
+        return "/patient-dashboard";
       case "psychiatrist":
-        navigate("/psychiatrist_dashboard");
- 
+        return "/psychiatrist_dashboard";
       case "junior_psychologist":
-        navigate("/junior-pysychology-dashboard");
-
+        return "/junior-pysychology-dashboard";
       case "admin":
-        navigate("/admin-dashboard");
-
-        case "senior_psychologist":
-          navigate("/senior-pysychology-dashboard");
+        return "/admin-dashboard";
+      case "senior_psychologist":
+        return "/senior-pysychology-dashboard";
       default:
         return "/dashboard";
-   
     }
+  };
+
+  // Handle dashboard navigation for mobile
+  const handleDashboardClick = () => {
+    const dashboardPath = getDashboardLink();
+    navigate(dashboardPath);
+    setIsOpen(false);
   };
 
   return (
@@ -92,19 +92,13 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center ">
-              {/* <img src={Logo} alt="Logo" className="relative z-10 w-14 h-16" /> */}
-                {/* <img 
-                  src={Logo} 
-                  alt="MetroMind Logo" 
-                  className="w-16 h-16 sm:w-12 sm:h-12  object-contain object-center"
-                /> */}
               <img 
-  src={Logo} 
-  alt="MetroMind Logo" 
-  width="64" 
-  height="64"
-  className="w-16 h-16 sm:w-12 sm:h-12 object-contain object-center"
-/>
+                src={Logo} 
+                alt="MetroMind Logo" 
+                width="64" 
+                height="64"
+                className="w-16 h-16 sm:w-12 sm:h-12 object-contain object-center"
+              />
               <span className="text-xl font-bold text-gray-900">MetroMind</span>
             </Link>
           </div>
@@ -112,8 +106,6 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="flex items-center space-x-8">
-          
-
               {email ? (
                 <div className="relative" ref={dropdownRef}>
                   <button 
@@ -133,9 +125,15 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                         <p className="text-xs text-gray-500 capitalize">{role}</p>
                       </div>
                       <div className="px-4 py-2">
-                       {/* <button onClick={onLearnMore }>
+                        <button
+                          onClick={() => {
+                            navigate(getDashboardLink());
+                            setUserDropdownOpen(false);
+                          }}
+                          className="flex items-center gap-2 py-2 text-gray-700 hover:text-teal-500 transition-colors duration-200 w-full text-left"
+                        >
                           Dashboard
-                        </button> */}
+                        </button>
                         
                         <button
                           onClick={handleLogout}
@@ -156,7 +154,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                 >
                   <Link to="/login" className="flex items-center gap-2">
                     <LogIn className="h-4 w-4" />
-                Sign in
+                    Sign in
                   </Link>
                 </Button>
               )}
@@ -189,13 +187,12 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
               Home
             </Link>
             {email && (
-              <Link
-                to={getDashboardLink()}
-                className="block py-2 text-gray-700 hover:text-teal-500 transition-colors duration-200"
-                onClick={() => setIsOpen(false)}
+              <button
+                onClick={handleDashboardClick}
+                className="block py-2 text-gray-700 hover:text-teal-500 transition-colors duration-200 w-full text-left"
               >
                 Dashboard
-              </Link>
+              </button>
             )}
             <Link
               to="#features"

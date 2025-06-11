@@ -154,16 +154,16 @@ const [updateLoading, setUpdateLoading] = useState<number | null>(null);
       setIsLoading(true);
       try {
         const data = await patientDetails(userId);
-        console.log("patientDetails:", data);
-
+        // console.log("patientDetails:", data.mobile_number);
+localStorage.setItem("voxPhonNo",data.mobile_number)
         // Assuming the API returns an array and we want the first patient
         const patient = Array.isArray(data) ? data[0] : data;
-        console.log("Full deal data patient", patient);
+        // console.log("Full deal data patient", patient);
         setPatientData(patient);
 
         if (Array.isArray(patient.diagnosis) && patient.diagnosis.length > 0) {
           const lastItem = patient.diagnosis[patient.diagnosis.length - 1];
-          console.log("lastItem**##", lastItem.ai_patient_summary_file);
+          // console.log("lastItem**##", lastItem.ai_patient_summary_file);
           setChatData(lastItem);
           setPatientPdf(lastItem.ai_patient_summary_file || "")
           
@@ -224,11 +224,11 @@ const [updateLoading, setUpdateLoading] = useState<number | null>(null);
         const response: AssessmentResponse = await PatientAssessmentList(
           Number(patientData?.id)
         );
-        console.log("assessment data:", response);
+        // console.log("assessment data:", response);
 
         if (response.status === "ok" && response.data) {
           setAssessmentData(response.data);
-          console.log("AAA",response.data)
+          // console.log("AAA",response.data)
         } else {
           setError("Failed to fetch assessment data");
         }
@@ -482,9 +482,9 @@ const handleEditSave = async (id: number) => {
 };
   const summaryText = getPatientSummary();
   const isChatEnabled = patientData?.chat_enabled;
-  console.log("isChatEnabled@@@@@@@@@@@", isChatEnabled);
+  // console.log("isChatEnabled@@@@@@@@@@@", isChatEnabled);
   const isPreliminary = chatData?.is_preliminary;
-  console.log("isPreliminary..........", isPreliminary);
+  // console.log("isPreliminary..........", isPreliminary);
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6">
