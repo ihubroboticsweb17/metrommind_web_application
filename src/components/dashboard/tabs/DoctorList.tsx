@@ -59,7 +59,7 @@ const DoctorListTab: React.FC<DoctorListTabProps> = ({ patientId, onDoctorAssign
 
   const handleAssignDoctor = async (doctorId: number) => {
     try {
-      const res = await assignDoctorToPatient(doctorId, patientId);
+      // const res = await assignDoctorToPatient(doctorId, patientId);
       const assignedDoctor = doctorList.find((doc) => doc.id === doctorId);
       
       if (assignedDoctor) {
@@ -67,10 +67,10 @@ const DoctorListTab: React.FC<DoctorListTabProps> = ({ patientId, onDoctorAssign
         setAssignedDoctor(assignedDoctor);
       }
       
-      toast({
-        title: "Success",
-        description: "Doctor assigned successfully!",
-      });
+      // toast({
+      //   title: "Success",
+      //   description: "Doctor assigned successfully!",
+      // });
     } catch (err) {
       console.error(err);
       toast({

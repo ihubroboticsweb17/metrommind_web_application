@@ -23,7 +23,10 @@ const DoctorAsgPatientList: React.FC<ParentProps> = ({ doctorId}) => {
   
     const fetchPatients = async () => {
       try {
-        const data = await AssignDoctorPatientList(doctorId);
+        const data = await AssignDoctorPatientList(
+          // doctorId
+
+        );
         console.log("Fetched patients:", data);
         setPatients(data);
       } catch (error) {

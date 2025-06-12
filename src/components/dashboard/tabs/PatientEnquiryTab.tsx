@@ -426,7 +426,7 @@ const PatientEnquiryTab = () => {
         setIsApproved(true);
 
         // Update patient-specific state
-        updatePatientState(patientId, {
+        updatePatientState(selectedPatient.id, {
           isApproved: true,
         });
       } else {
@@ -475,14 +475,14 @@ const PatientEnquiryTab = () => {
       } else {
         toast({
           title: "Failed",
-          description: response.message || "Failed to schedule appointment",
+          description: response.message || "Failed to submit therapist notes",
           variant: "destructive",
         });
       }
     } catch (err: any) {
       toast({
         title: "Error",
-        description: err.message || "Failed to submit therapist notes",
+        description: err.message || "This field cannot be null",
         variant: "destructive",
       });
     }
@@ -817,7 +817,7 @@ const PatientEnquiryTab = () => {
                                 </p>
                               </div>
                             </div>
-                            <div className="md:col-span-2 mt-2">
+                            {/* <div className="md:col-span-2 mt-2">
                               <h3 className="font-semibold text-teal-800 mb-2">
                                 Risk Assessment
                               </h3>
@@ -832,7 +832,7 @@ const PatientEnquiryTab = () => {
                                   Depression
                                 </Badge>
                               </div>
-                            </div>
+                            </div> */}
                           </div>
                         </TabsContent>
 
@@ -846,9 +846,8 @@ const PatientEnquiryTab = () => {
                               {!generatedStatus[selectedPatient.id] ? (
                                 <div className="bg-gray-50 rounded-lg p-6 text-center">
                                   <p className="text-gray-600 mb-4">
-                                    No AI diagnosis has been generated for this
-                                    patient yet. Generate a report to view the
-                                    AI assessment.
+                                    Import AI Report to view detailed Diagnosis
+                                    Summary.
                                   </p>
                                   <Button
                                     onClick={() =>
@@ -856,7 +855,7 @@ const PatientEnquiryTab = () => {
                                     }
                                     className="bg-teal-600 hover:bg-teal-700"
                                   >
-                                    Generate AI Report
+                                    Import AI Report
                                   </Button>
                                 </div>
                               ) : (
@@ -961,16 +960,24 @@ const PatientEnquiryTab = () => {
 
                                   <div className="flex justify-end items-center">
                                     <div className="space-x-2">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="text-red-600 border-red-600 hover:bg-red-50"
-                                        onClick={() =>
-                                          handleReject(selectedPatient.id)
-                                        }
-                                      >
-                                        <X className="w-3 h-3 mr-1" /> Reject
-                                      </Button>
+                                      {!isApprovedpatientList && (
+                                        <>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="text-red-600 border-red-600 hover:bg-red-50"
+                                            onClick={() =>
+                                              handleReject(selectedPatient.id)
+                                            }
+                                            disabled={
+                                              !isSecondAssessmentSubmitted
+                                            }
+                                          >
+                                            <X className="w-3 h-3 mr-1" />{" "}
+                                            Reject
+                                          </Button>
+                                        </>
+                                      )}
                                       {!isApprovedpatientList && (
                                         <>
                                           <Button
@@ -978,6 +985,9 @@ const PatientEnquiryTab = () => {
                                             className="bg-green-600 text-white hover:bg-green-700"
                                             onClick={() =>
                                               handleApprove(selectedPatient.id)
+                                            }
+                                            disabled={
+                                              !isSecondAssessmentSubmitted
                                             }
                                           >
                                             <CheckCircle className="w-3 h-3 mr-1" />

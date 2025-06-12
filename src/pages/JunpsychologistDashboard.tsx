@@ -160,7 +160,7 @@ const JunpsychologistDashboard = () => {
                           value="medicine"
                           className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg  transition-all duration-200 hover:shadow-lg hover:scale-105"
                         >
-                          Medicine 
+                          Stock 
                         </TabsTrigger>
           </TabsList>
           <TabsContent value="Overview" className="space-y-6">

@@ -141,7 +141,7 @@ const SlotSelector: React.FC<SlotSelectorProps> = ({ onClose, onSlotAdded }) => 
       if (error.response && error.response.data) {
         const errorData = error.response.data;
         // Handle specific error messages
-        setErrorMessage(errorData.message || "Failed to create slot");
+        setErrorMessage(errorData.message || "The selected time range is invalid or overlaps with another scheduled slot. Please choose a different range");
       } else {
         toast({
           variant: "destructive",

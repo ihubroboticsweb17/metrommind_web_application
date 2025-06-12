@@ -32,6 +32,7 @@ import EmailOtpForgoatPassword from "./pages/EmailOtpForgoatPassword";
 import StepVerifyOtp from "./pages/StepVerifyOtp";
 import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
 import PasswordRestPage from "./pages/PasswordRestPage";
+import Contact from "./components/contacts&policies/contact";
 // Define available themes
 export type ThemeType =
   | "default"
@@ -195,6 +196,7 @@ const App = () => {
                          {/* <Route path="/VerifyOtp" element={<EmailOtpForgoatPassword/>}/> */}
                         <Route path="/Emailverify" element={<ForgotPasswordFlow/>}/>
                             {/* <Route path="/Passwordrest" element={<PasswordRestPage/>}/> */}
+                            <Route path="/contact" element={<Contact/>}/>
                 <Route
                   path="/MedicalReport"
                   element={

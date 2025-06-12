@@ -8,6 +8,7 @@ import {
   GeneratButton,
   AddOnSecondAiSummry,
   ChatEnableApi,
+  assignDoctorToPatient,
 } from "@/models/auth";
 import {
   Card,
@@ -159,7 +160,9 @@ const PatientOverview = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [patientsPerPage] = useState(10);
-   const [isConformpatientList, setIsConformpatientList] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isConformpatientList, setIsConformpatientList] = useState(false);
   // console.log("setSelectedDate$$$$$$$$$", selectedPatient);
   useEffect(() => {
     const fetchPatients = async () => {
@@ -185,7 +188,6 @@ const PatientOverview = () => {
 
     fetchPatients();
   }, [toast, loading]);
-
 
   useEffect(() => {
     if (
@@ -227,7 +229,7 @@ const PatientOverview = () => {
 
     toast({
       title: "Doctor Assigned",
-      description: `Dr. ${doctor.name} has been assigned to this patient.`,
+      description: `Dr. ${doctor.name} has been assigned to this patient. Select a slot to finish appointment`,
     });
   };
 
@@ -261,6 +263,7 @@ const PatientOverview = () => {
     }
   };
 
+
   const handleAppointment = async () => {
     if (!selectedPatient || !assignedDoctor || !selectedDate || !selectedSlot) {
       toast({
@@ -271,15 +274,33 @@ const PatientOverview = () => {
       return;
     }
 
-    const formData = {
-      doctor: assignedDoctor.id,
-      patient: selectedPatient.id,
-      slot: selectedSlot.id,
-      date: selectedDate,
-    };
+    setIsLoading(true);
+
+    const doctorId = assignedDoctor.id;
+    const patientId = selectedPatient.id;
 
     try {
       const token = localStorage.getItem("access_token");
+
+      const assignRes = await assignDoctorToPatient(doctorId, patientId);
+
+      if (assignRes.status !== "ok") {
+        toast({
+          title: "Doctor Assignment Failed",
+          description:
+            assignRes.message || "Could not assign doctor to patient.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const formData = {
+        doctor: doctorId,
+        patient: patientId,
+        slot: selectedSlot.id,
+        date: selectedDate,
+      };
+
       const response = await MakeAppointment(formData, token);
 
       if (response.status === "ok") {
@@ -288,14 +309,11 @@ const PatientOverview = () => {
           description: "Appointment scheduled successfully!",
         });
 
-        // Reset appointment form
         setActiveTab("overview");
-            setPatients((prevPatients) =>
+        setPatients((prevPatients) =>
           prevPatients.filter((patient) => patient.id !== selectedPatient.id)
         );
-        if (selectedPatient?.id === selectedPatient.id) {
-          setSelectedPatient(null);
-        }
+        setSelectedPatient(null);
       } else {
         toast({
           title: "Failed",
@@ -309,6 +327,8 @@ const PatientOverview = () => {
         description: "Something went wrong while scheduling the appointment.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -377,7 +397,7 @@ const PatientOverview = () => {
     try {
       const formData = { patient_id: selectedPatient.id };
       const response = await ChatEnableApi(formData);
-console.log("response",response)
+      console.log("response", response);
       if (response.status === "true") {
         toast({
           title: "Success",
@@ -610,28 +630,35 @@ console.log("response",response)
               ) : (
                 <div className="space-y-6">
                   <Tabs value={activeTab} onValueChange={setActiveTab}>
-                
                     <TabsList className="w-full grid grid-cols-1 sm:grid-cols-3 gap-1">
-  <TabsTrigger value="overview" className="text-sm sm:text-base">
-    Patient Details
-  </TabsTrigger>
-  <TabsTrigger value="diagnosis" className="text-sm sm:text-base">
-    AI Diagnosis
-  </TabsTrigger>
-  <TabsTrigger value="appointment" className="text-sm sm:text-base">
-    Schedule Appointment
-  </TabsTrigger>
-</TabsList>
-  {/* Patient Overview Tab */}
-                
-                      
+                      <TabsTrigger
+                        value="overview"
+                        className="text-sm sm:text-base"
+                      >
+                        Patient Details
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="diagnosis"
+                        className="text-sm sm:text-base"
+                      >
+                        AI Diagnosis
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="appointment"
+                        className="text-sm sm:text-base"
+                      >
+                        Schedule Appointment
+                      </TabsTrigger>
+                    </TabsList>
+                    {/* Patient Overview Tab */}
+
                     <TabsContent value="overview" className="mt-14">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-white p-4 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-3">
                             Personal Information
                           </h3>
-                         
+
                           <div className="space-y-2">
                             <p className="text-sm">
                               <span className="font-medium text-gray-700">
@@ -684,7 +711,7 @@ console.log("response",response)
                             </p>
                           </div>
                         </div>
-                        <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
+                        {/* <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
                           <h3 className="font-semibold text-teal-800 mb-3">
                             Risk Assessment
                           </h3>
@@ -699,7 +726,7 @@ console.log("response",response)
                               Depression
                             </Badge>
                           </div>
-                        </div>
+                        </div> */}
                         <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
                           <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-teal-800">
@@ -798,7 +825,6 @@ console.log("response",response)
                             Disease Diagnosis
                           </h3>
                           <p className="text-sm text-gray-600">
-                          
                             {checkState?.disease_diagnosed}
                           </p>
                         </div>
@@ -898,7 +924,7 @@ console.log("response",response)
                               className="bg-teal-600 hover:bg-teal-700"
                               disabled={load}
                             >
-                              {load ? "Submitting..." : "Chat Enable "}
+                              {load ? "Chat Disable" : "Chat Enable "}
                             </Button>
                           )}
                         </div>
@@ -1024,7 +1050,8 @@ console.log("response",response)
                                 .
                               </p>
                               <p className="text-gray-600 mt-2">
-                                Please select a different date.
+                                Please select a different date or create a new
+                                slot.
                               </p>
                             </div>
                           </div>
@@ -1055,12 +1082,23 @@ console.log("response",response)
                               </p>
                             </div>
 
-                            <div className="mt-4 flex justify-end">
+                            {/* <div className="mt-4 flex justify-end">
                               <Button
                                 onClick={handleAppointment}
                                 className="bg-teal-600 hover:bg-teal-700"
                               >
                                 Confirm Appointment
+                              </Button>
+                            </div> */}
+                            <div className="mt-4 flex justify-end">
+                              <Button
+                                onClick={handleAppointment}
+                                className="bg-teal-600 hover:bg-teal-700"
+                                disabled={isLoading}
+                              >
+                                {isLoading
+                                  ? "Scheduling..."
+                                  : "Confirm Appointment"}
                               </Button>
                             </div>
                           </div>
@@ -1127,7 +1165,6 @@ console.log("response",response)
             >
               <Download className="w-4 h-4 mr-2" /> Download
             </Button>
-      
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1171,7 +1208,6 @@ console.log("response",response)
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
     </div>
   );
 };

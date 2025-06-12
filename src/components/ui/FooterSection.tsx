@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ThemeType } from '@/App';
 import Logo from '/image/logo.png';
@@ -76,148 +76,143 @@ const FooterSection = ({ theme = "default" }: FooterSectionProps) => {
     }
   };
 
+  const socialLinks = [
+    { icon: Facebook, href: "https://www.facebook.com/share/1C98nntw4B/" },
+    { icon: Twitter, href: "https://x.com/metromindkerala" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/metro-mind/" },
+    { icon: Instagram, href: "https://www.instagram.com/metromindhospital?igsh=ZW4zY2JvOWtkMXc2" },
+  ];
+
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={` ${getFooterBackgroundClass()} `}>
-      <div className="metro-container rounded-sm bg-teal-600">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 mt-8">
-          {/* Company Info */}
-          <div className="space-y-3  mt-12">
-            <div className="flex items-center space-x-3 ">
-              <img 
-                src={Logo} 
-                alt="MetroMind Logo" 
-                className="w-10 h-10 object-contain bg-teal-50 rounded-sm" 
-              />
-              <h3 className={`text-white text-xl font-bold ${getAccentColor()}`}>
-                MetroMind
-              </h3>
-            </div>
-            <p className="text-white text-muted-foreground text-sm leading-relaxed">
-              Transforming mental healthcare delivery with advanced AI analytics, 
-              real-time monitoring, and intelligent insights for better patient outcomes.
-            </p>
-            <div className="flex space-x-3">
-              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
-                <a
-                  key={index}
-                  href="https://metromindhospitals.com/#"
-                  className={`p-2 rounded-lg transition-all duration-300 ${getSocialIconClass()} ${getAccentColor()}`}
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Services */}
-          <div className="space-y-3  mt-12">
-            <h4 className={`text-white text-lg font-semibold ${getAccentColor()}`}>
-              Our Services
-            </h4>
-            <ul className="space-y-3">
-              {[
-                'Metromind Therapy',
-                'Psychedelic Therapy',
-                'rTMS Therapy',
-                'IV Therapy Clinic'
-              ].map((service, index) => (
-                <li key={index}>
-                  <Link 
-                    to="#" 
-                    className={`text-white text-muted-foreground ${getHoverColor()} transition-colors duration-200 text-sm`}
+    <footer className={`${getFooterBackgroundClass()} text-gray-800 dark:text-gray-200`}>
+      <div className="p-8 rounded-sm bg-teal-600">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12">
+            {/* Company Info & Socials */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <img
+                  src={Logo}
+                  alt="MetroMind Logo"
+                  className="w-12 h-12 object-contain bg-teal-50 rounded-lg p-1"
+                />
+                <h3 className={`text-white text-2xl font-bold ${getAccentColor()}`}>
+                  MetroMind
+                </h3>
+              </div>
+              <p className="text-white text-md leading-relaxed">
+                Transforming mental healthcare delivery with advanced AI analytics,
+                real-time monitoring, and intelligent insights for better patient outcomes.
+              </p>
+              <div className="flex space-x-4 mt-4">
+                {socialLinks.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className={`p-3 rounded-full transition-all duration-300 ${getSocialIconClass()}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.icon.name}
                   >
-                    {service}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    <item.icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+            </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4  mt-12">
-            <h4 className={`text-white text-lg font-semibold ${getAccentColor()}`}>
-              Quick Links
-            </h4>
-            <ul className="space-y-3">
-              {[
-                // { name: 'About Us', path: '/about' },
-                { name: 'Contact', path: '/contact' },
-                { name: 'Privacy Policy', path: '/privacy' },
-                { name: 'Terms of Service', path: '/terms' },
-                { name: 'Help Center', path: '/help' }
-              ].map((link, index) => (
-                <li key={index}>
-                  <Link 
-                    to={link.path} 
-                    className={`text-white text-muted-foreground ${getHoverColor()} transition-colors duration-200 text-sm`}
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h4 className={`text-white text-xl font-semibold ${getAccentColor()}`}>
+                Quick Links
+              </h4>
+              <ul className="space-y-3">
+                {[
+                  { name: 'Home', path: '/' },
+                  { name: 'Services', path: '/services' },
+                  { name: 'Contact Us', path: '/contact' },
+                  { name: 'About Us', path: '/about' },
+                ].map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      to={link.path}
+                      className={`text-white text-sm ${getHoverColor()} transition-colors duration-200`}
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div className="space-y-4">
+              <h4 className={`text-white text-xl font-semibold ${getAccentColor()}`}>
+                Get in Touch
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <div className={`p-3 rounded-full ${getSocialIconClass()}`}>
+                    <Mail className={`h-5 w-5 ${getAccentColor()}`} />
+                  </div>
+                  {/* Mailto link */}
+                  <a
+                    href="mailto:support@metromind.com"
+                    className="text-white text-sm pt-1 hover:underline" // Added hover effect
                   >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div className="space-y-3 mt-12">
-            <h4 className={`text-white text-lg font-semibold ${getAccentColor()}`}>
-              Contact Info
-            </h4>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${getSocialIconClass()}`}>
-                  <Mail className={`h-4 w-4 ${getAccentColor()}`} />
+                    support@metromind.com
+                  </a>
                 </div>
-                <span className="text-white text-muted-foreground text-sm">
-                  support@metromind.com
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${getSocialIconClass()}`}>
-                  <Phone className={`h-4 w-4 ${getAccentColor()}`} />
+                <div className="flex items-start space-x-3">
+                  <div className={`p-3 rounded-full ${getSocialIconClass()}`}>
+                    <Phone className={`h-5 w-5 ${getAccentColor()}`} />
+                  </div>
+                  {/* Tel link */}
+                  <a
+                    href="tel:+917306808867" // Standard format: tel:+[countrycode][number]
+                    className="text-white text-sm pt-1 hover:underline" // Added hover effect
+                  >
+                    +91 73068 08867
+                  </a>
                 </div>
-                <span className="text-white text-muted-foreground text-sm">
-            +91 73068 08867
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-lg ${getSocialIconClass()}`}>
-                  <MapPin className={`h-4 w-4 ${getAccentColor()}`} />
+                <div className="flex items-start space-x-3">
+                  <div className={`p-3 rounded-full ${getSocialIconClass()}`}>
+                    <MapPin className={`h-5 w-5 ${getAccentColor()}`} />
+                  </div>
+                  {/* Google Maps link (example) */}
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=Rajagiri+Rd,+Rajagiri+P.O,+South+Kalamassery,+Kalamassery,+Kochi,+Kerala+683104"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white text-sm pt-1 hover:underline" // Added hover effect
+                  >
+                    <address className="not-italic text-white text-sm pt-1">
+                      Rajagiri Rd, Rajagiri P.O, South Kalamassery, Kalamassery, Kochi, Kerala 683104
+                    </address>
+                  </a>
                 </div>
-                <span className="text-white text-muted-foreground text-sm">
-             Rajagiri Rd, Rajagiri P.O, South Kalamassery, Kalamassery, Kochi, Kerala 683104
-                </span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Section */}
-        <div className={`border-t ${getBorderColor()} pt-8`}>
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-            <p className="text-white text-muted-foreground text-sm">
-              © {currentYear} MetroMind. All rights reserved.
+          {/* Bottom Section */}
+          <div className={`border-t ${getBorderColor()} pt-8 mt-12 text-center md:flex md:justify-between md:items-center`}>
+            <p className="text-white text-sm mb-4 md:mb-0">
+              &copy; {currentYear} MetroMind. All rights reserved.
             </p>
-            <div className="flex space-x-6">
-              <Link 
-                to="/privacy" 
-                className={`text-white text-muted-foreground ${getHoverColor()} transition-colors duration-200 text-sm`}
+            <div className="flex justify-center space-x-6">
+              <Link
+                to="/privacy"
+                className={`text-white text-sm ${getHoverColor()} transition-colors duration-200`}
               >
                 Privacy Policy
               </Link>
-              <Link 
-                to="/terms" 
-                className={`text-white text-muted-foreground ${getHoverColor()} transition-colors duration-200 text-sm`}
+              <Link
+                to="/terms"
+                className={`text-white text-sm ${getHoverColor()} transition-colors duration-200`}
               >
                 Terms of Service
-              </Link>
-              <Link 
-                to="/cookies" 
-                className={`text-white text-muted-foreground ${getHoverColor()} transition-colors duration-200 text-sm`}
-              >
-                Cookie Policy
               </Link>
             </div>
           </div>
