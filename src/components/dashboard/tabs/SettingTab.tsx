@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import React, { useState } from "react";
+import ReappoinmentTab from "./ReappoinmentTab";
 
 
 const SettingTab = () => {
@@ -107,6 +108,7 @@ const SettingTab = () => {
           <p>Consent Templates</p>
           <p>Access Logs</p>
         </Card>
+   
       </div>
 
       <div className="mt-6 text-center">

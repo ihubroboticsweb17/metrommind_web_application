@@ -38,6 +38,7 @@ import MedicineBrandTab from "@/components/dashboard/tabs/MedicineBrandTab";
 import { DoctorList } from "@/models/auth";
 import AdminDoctorListTab from "@/components/dashboard/tabs/AdminDoctorListTab";
 import TeamCommunicationTab from "@/components/dashboard/tabs/TeamCommunicationTab";
+import ReappoinmentTab from "@/components/dashboard/tabs/ReappoinmentTab";
 const JunpsychologistDashboard = () => {
   const patient = [
     {
@@ -162,6 +163,12 @@ const JunpsychologistDashboard = () => {
                         >
                           Stock 
                         </TabsTrigger>
+                               <TabsTrigger
+                          value="reappoinment"
+                          className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg  transition-all duration-200 hover:shadow-lg hover:scale-105"
+                        >
+                          Reappoinment
+                        </TabsTrigger>
           </TabsList>
           <TabsContent value="Overview" className="space-y-6">
             {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"> */}
@@ -260,6 +267,11 @@ const JunpsychologistDashboard = () => {
               <CardContent> */}
             <BookingSlotList/>
               {/* </CardContent> */}
+            </Card>
+          </TabsContent>
+             <TabsContent value="reappoinment" className="space-y-6">
+            <Card className="border-teal-100 shadow-teal-glow bg-white">
+       <ReappoinmentTab/>
             </Card>
           </TabsContent>
             <TabsContent value="medicine" className="space-y-6">

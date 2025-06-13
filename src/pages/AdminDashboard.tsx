@@ -18,6 +18,7 @@ import {
   Cross,
   MessageSquare,
   MessageSquareText,
+  Grip,
 } from "lucide-react";
 import {
   Card,
@@ -40,28 +41,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/App";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  AreaChart,
-  Area,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-  BarChart,
-  Bar,
-  Cell,
-  PieChart as RechartsPieChart,
-  Pie,
-} from "recharts";
+
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog } from "@radix-ui/react-dialog";
@@ -93,6 +74,7 @@ import AddMedicineFreqTab from "@/components/dashboard/tabs/AddMedicineFreqTab";
 import AdminPatientRejectListTab from "@/components/dashboard/tabs/AdminPatientRejectListTab";
 import PatientOverview from "@/components/dashboard/tabs/PatientOverview";
 import AdminPromptTab from "@/components/dashboard/tabs/AdminPromptTab";
+import ReappointmentTab from "@/components/dashboard/tabs/ReappoinmentTab";
 
 // Sample data for charts
 const sessionData = [
@@ -306,7 +288,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-3">
-          <TabsList className="grid grid-cols-6 sm:w-[800px] w-full gap-1">
+          <TabsList className="grid grid-cols-7 sm:w-[1000px] w-full gap-1">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg gap-2"
@@ -364,6 +346,13 @@ const AdminDashboard = () => {
               <MessageSquareText className="h-4 w-4" />
               <span className="hidden sm:inline">Prompt</span>
             </TabsTrigger>
+                 <TabsTrigger
+              value="reappoinment"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg gap-2"
+            >
+              <Grip className="h-4 w-4" />
+              <span className="hidden sm:inline">Appoinment</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="patients" className="space-y-6">
@@ -388,6 +377,11 @@ const AdminDashboard = () => {
           <TabsContent value="rejectlist" className="space-y-6">
             <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white">
               <AdminPatientRejectListTab />
+            </Card>
+          </TabsContent>
+            <TabsContent value="reappoinment" className="space-y-6">
+            <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white">
+           <ReappointmentTab/>
             </Card>
           </TabsContent>
           <TabsContent value="doctors" className="space-y-6">
@@ -432,6 +426,7 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          
           <TabsContent value="prompt" className="space-y-6">
             <Card className="border-teal-100 shadow-teal-glow overflow-hidden bg-white">
               <CardContent className="p-0">
@@ -689,6 +684,7 @@ const AdminDashboard = () => {
               </Card>
             </div> */}
           </TabsContent>
+          
           <TabsContent value="medicins" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Dialog open={openMedicine} onOpenChange={setOpenMedicine}>

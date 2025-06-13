@@ -659,6 +659,26 @@ export const PatientAssessmentList = async (id: number) => {
     throw error;
   }
 };
+export const PatientAppoinmentList = async (id: number) => {
+  try {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+    // const userid=localStorage.getItem("user_id")
+    const response = await api.get("appointment/appointment/list/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching patient list:", error);
+    throw error;
+  }
+};
 export const DoctorAssessmenttoPatient = async (
   formData: any,
   headers = {
@@ -1112,7 +1132,26 @@ export const AvailableDoctorsList = async () => {
     throw error;
   }
 };
+export const Reappointment = async () => {
+  try {
+    const token = localStorage.getItem("access_token");
 
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+
+    const response = await api.get("assign_doctor/doctor/assign/list/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching patient list:", error);
+    throw error;
+  }
+};
 export const quotesauth = async () => {
   const response = await api.get(`accounts/quotes/`);
   console.log("DoctorObservationPatient", response);

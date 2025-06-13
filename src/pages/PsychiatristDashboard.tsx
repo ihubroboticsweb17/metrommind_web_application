@@ -509,7 +509,7 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import axios from "axios";
 import DoctorAsgPatientList from "@/components/dashboard/tabs/DoctorAsgPatientList";
-import { AssignDoctorPatientList, Medicineregister } from "@/models/auth";
+import { AssignDoctorPatientList, Medicineregister, PatientAssessmentList } from "@/models/auth";
 import SeniorSchedulTab from "@/components/dashboard/tabs/SeniorSchedulTab";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription,} from "@/components/ui/card";
@@ -536,6 +536,8 @@ import AssessmentPsychiatristTab from "@/components/dashboard/tabs/AssesmentPsyc
 import AllReportDoctorList from "@/components/dashboard/tabs/AllReportDoctorList";
 import AllReportPatientList from "@/components/dashboard/tabs/AllReportPatientList";
 import SeniorCountTab from "@/components/dashboard/tabs/SeniorCountTab";
+import PatientAppoinmentList from "@/components/dashboard/tabs/PatientAppoinmentList";
+import PatientAppointments from "@/components/dashboard/tabs/PatientAppointments";
 
 interface Patient {
   id: string;
@@ -690,6 +692,13 @@ const PsychiatristDashboard = () => {
             >
               Medicine 
             </TabsTrigger> */}
+                <TabsTrigger
+              value="appoinment"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg  transition-all duration-200 hover:shadow-lg hover:scale-105"
+            >
+              Appointment
+
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="patients" className="space-y-4">
@@ -829,6 +838,10 @@ const PsychiatristDashboard = () => {
                 <AllReportDoctorList />
               </CardContent>
             </Card>
+          </TabsContent>
+          <TabsContent value="appoinment" className="space-y-6">
+          <PatientAppoinmentList/>
+          {/* <PatientAppointments/> */}
           </TabsContent>
           
           <TabsContent value="medicine" className="space-y-6">

@@ -52,6 +52,7 @@ import { useToast } from "@/hooks/use-toast";
 import AssesmentSeniorTab from "@/components/dashboard/tabs/AssesmentSeniorTab";
 import SeniorCountTab from "@/components/dashboard/tabs/SeniorCountTab";
 import TeamCommunicationTab from "@/components/dashboard/tabs/TeamCommunicationTab";
+import PatientAppoinmentList from "@/components/dashboard/tabs/PatientAppoinmentList";
 
 interface Patient {
   id: string;
@@ -266,6 +267,14 @@ const SeniorpsychologistDashboard = () => {
             >
               Reports
             </TabsTrigger>
+          
+                    <TabsTrigger
+                          value="appoinment"
+                          className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg  transition-all duration-200 hover:shadow-lg hover:scale-105"
+                        >
+                          Appointment
+            
+                        </TabsTrigger>
           </TabsList>
 
           <TabsContent value="patients" className="space-y-6">
@@ -484,6 +493,9 @@ const SeniorpsychologistDashboard = () => {
               </CardContent>
             </Card>
           </TabsContent>
+            <TabsContent value="appoinment" className="space-y-6">
+                    <PatientAppoinmentList/>
+                    </TabsContent>
         </Tabs>
       </div>
 

@@ -16,6 +16,7 @@ import VoiceAssistant from "../VoiceAssistant";
 import SchedulePatientTab from "./tabs/SchedulePatientTab";
 import AssessmentPatentTab from "./tabs/AssessmentPatentTab";
 import MedicineTab from "./tabs/MedicineTab";
+import PatientAppointments from "./tabs/PatientAppointments";
 
 const PatientTabs = () => {
   const [isListening, setIsListening] = useState(false);
@@ -69,6 +70,12 @@ const PatientTabs = () => {
             >
               Medicine
             </TabsTrigger>
+                <TabsTrigger
+              value="appoinment"
+              className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg"
+            >
+              Appoinment
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
             <OverviewTab />
@@ -84,6 +91,9 @@ const PatientTabs = () => {
           </TabsContent>
           <TabsContent value="medicine">
             <MedicineTab/>
+          </TabsContent>
+            <TabsContent value="appoinment">
+            <PatientAppointments/>
           </TabsContent>
         </Tabs>
         {/* 
