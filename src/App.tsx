@@ -32,7 +32,8 @@ import EmailOtpForgoatPassword from "./pages/EmailOtpForgoatPassword";
 import StepVerifyOtp from "./pages/StepVerifyOtp";
 import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
 import PasswordRestPage from "./pages/PasswordRestPage";
-import Contact from "./components/contacts&policies/contact";
+
+import Contact from "./components/contacts&policies/Contact";
 // Define available themes
 export type ThemeType =
   | "default"
