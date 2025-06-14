@@ -221,7 +221,7 @@ const PatientEnquiryTab = () => {
         setError("Failed to load patients.");
         toast({
           title: "Error",
-          description: "Failed to load patient data.",
+          description: "Unable to fetch patient data. Please try again..",
           variant: "destructive",
         });
       } finally {
@@ -314,6 +314,14 @@ const PatientEnquiryTab = () => {
 
   const handleSubmitTherapistNotes = async () => {
     if (!selectedPatient) return;
+  if (!addOnObs.trim()) {
+    toast({
+      title: "Missing Notes",
+      description: "Please enter therapist notes before submitting.",
+      variant: "destructive",
+    });
+    return;
+  }
 
     const doctorid = localStorage.getItem("user_id");
 
@@ -342,7 +350,7 @@ const PatientEnquiryTab = () => {
       } else {
         toast({
           title: "Failed",
-          description: response.message || "Failed to schedule appointment",
+          description: response.message || "Failed to submit therapist notes",
           variant: "destructive",
         });
       }
@@ -443,9 +451,17 @@ const PatientEnquiryTab = () => {
   };
 
   const handleSubmitSecondTherapistNotes = async () => {
-    setLoading(true);
+  
     if (!selectedPatient) return;
-
+ if (!addOnSecondObs.trim()) {
+    toast({
+      title: "Missing Notes",
+      description: "Please enter Second therapist notes before submitting.",
+      variant: "destructive",
+    });
+    return;
+  }
+  setLoading(true);
     const doctorid = localStorage.getItem("user_id");
 
     try {
@@ -457,7 +473,7 @@ const PatientEnquiryTab = () => {
       if (response.status === "ok") {
         toast({
           title: "Success",
-          description: "Second Assessment notes submitted successfully",
+          description: "Second therapist notes submitted successfully",
         });
         setOpenSecondDialog(false);
         setIsApproved(true);
