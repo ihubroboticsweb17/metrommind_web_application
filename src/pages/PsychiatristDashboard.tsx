@@ -536,8 +536,9 @@ import AssessmentPsychiatristTab from "@/components/dashboard/tabs/AssesmentPsyc
 import AllReportDoctorList from "@/components/dashboard/tabs/AllReportDoctorList";
 import AllReportPatientList from "@/components/dashboard/tabs/AllReportPatientList";
 import SeniorCountTab from "@/components/dashboard/tabs/SeniorCountTab";
-import PatientAppoinmentList from "@/components/dashboard/tabs/PatientAppoinmentList";
+
 import PatientAppointments from "@/components/dashboard/tabs/PatientAppointments";
+import PsychiatristPatientAppointment from "@/components/dashboard/tabs/PsychiatristPatientAppointment";
 
 interface Patient {
   id: string;
@@ -840,8 +841,9 @@ const PsychiatristDashboard = () => {
             </Card>
           </TabsContent>
           <TabsContent value="appoinment" className="space-y-6">
-          <PatientAppoinmentList/>
-          {/* <PatientAppointments/> */}
+            <PsychiatristPatientAppointment/>
+   
+    {/* <PsychiatristPatientAppointment/> */}
           </TabsContent>
           
           <TabsContent value="medicine" className="space-y-6">

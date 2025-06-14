@@ -1,22 +1,25 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import OverviewTab from "./tabs/OverviewTab";
-import SessionsTab from "./tabs/SessionsTab";
-import AssessmentsTab from "./tabs/AssessmentsTab";
-import ChatTab from "./tabs/ChatTab";
+
+import ChatTab from "./ChatTab";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import useVoiceProcessor from "@/hooks/useVoiceProcessor";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Chatbox from "./tabs/Chatbox";
+import Chatbox from "./Chatbox";
 import ChatBotPage from "@/pages/ChatBotPage";
-import TaketoHuman from "./tabs/TaketoHuman";
-import VoiceAssistant from "../VoiceAssistant";
-import SchedulePatientTab from "./tabs/SchedulePatientTab";
-import AssessmentPatentTab from "./tabs/AssessmentPatentTab";
-import MedicineTab from "./tabs/MedicineTab";
-import PatientAppointments from "./tabs/PatientAppointments";
+import TaketoHuman from "./TaketoHuman";
+
+import SchedulePatientTab from "./SchedulePatientTab";
+import AssessmentPatentTab from "./AssessmentPatentTab";
+
+import AssessmentsTab from "./AssessmentsTab";
+import OverviewTab from "./OverviewTab";
+import SessionsTab from "./SessionsTab";
+import MedicineTable from "./MedicineTab";
+
+// import MedicineTab from "./tabs/MedicineTab";
 
 const PatientTabs = () => {
   const [isListening, setIsListening] = useState(false);
@@ -70,12 +73,6 @@ const PatientTabs = () => {
             >
               Medicine
             </TabsTrigger>
-                <TabsTrigger
-              value="appoinment"
-              className="data-[state=active]:bg-teal-500 data-[state=active]:text-white rounded-lg"
-            >
-              Appoinment
-            </TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
             <OverviewTab />
@@ -89,31 +86,10 @@ const PatientTabs = () => {
           <TabsContent value="call">
             <TaketoHuman />
           </TabsContent>
-          <TabsContent value="medicine">
+          {/* <TabsContent value="medicine">
             <MedicineTab/>
-          </TabsContent>
-            <TabsContent value="appoinment">
-            <PatientAppointments/>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
-        {/* 
-        <Button
-          onClick={handleToggleAssistant}
-          className={`rounded-full p-3 transition-all ${
-            isListening
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-green-500 hover:bg-green-600"
-          } ${isMobile ? "self-end" : ""}`}
-          aria-label={
-            isListening ? "Turn off voice assistant" : "Turn on voice assistant"
-          }
-        >
-          {isListening ? (
-            <MicOff className="h-5 w-5 text-white" />
-          ) : (
-            <Mic className="h-5 w-5 text-white" />
-          )}
-        </Button> */}
       </div>
 
       {isListening && assistantResponse && (
@@ -138,4 +114,3 @@ const PatientTabs = () => {
 };
 
 export default PatientTabs;
-

@@ -226,8 +226,8 @@ export default {
         "neon-pulse": "neon-pulse 3s ease-in-out infinite",
         "float-subtle": "float-subtle 3s ease-in-out infinite",
         'shimmer': "shimmer 2.5s infinite linear",
-		'slide-left-right': 'slide-left-right 2s ease-in-out infinite',
-		'marquee': 'marquee 5s linear infinite',
+    'slide-left-right': 'slide-left-right 2s ease-in-out infinite',
+    'marquee': 'marquee 5s linear infinite',
       },
       boxShadow: {
         glass: "0 8px 32px 0 rgba(0, 0, 0, 0.07)",

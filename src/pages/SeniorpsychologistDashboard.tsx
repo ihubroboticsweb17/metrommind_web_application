@@ -52,7 +52,9 @@ import { useToast } from "@/hooks/use-toast";
 import AssesmentSeniorTab from "@/components/dashboard/tabs/AssesmentSeniorTab";
 import SeniorCountTab from "@/components/dashboard/tabs/SeniorCountTab";
 import TeamCommunicationTab from "@/components/dashboard/tabs/TeamCommunicationTab";
-import PatientAppoinmentList from "@/components/dashboard/tabs/PatientAppoinmentList";
+import PatientAppointments from "@/components/dashboard/tabs/PatientAppointments";
+import SeniorPsychiatristPatientAppointment from "@/components/dashboard/tabs/SeniorPsychiatristPatientAppointment";
+
 
 interface Patient {
   id: string;
@@ -494,7 +496,8 @@ const SeniorpsychologistDashboard = () => {
             </Card>
           </TabsContent>
             <TabsContent value="appoinment" className="space-y-6">
-                    <PatientAppoinmentList/>
+                    <SeniorPsychiatristPatientAppointment/>
+                    {/* <PatientAppointments/> */}
                     </TabsContent>
         </Tabs>
       </div>

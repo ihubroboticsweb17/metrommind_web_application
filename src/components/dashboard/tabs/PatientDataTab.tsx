@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -6,15 +5,15 @@ import {
   MessageSquare,
   User,
   FileText,
-  Eye,
   Activity,
   CheckCircle,
   XCircle,
   PhoneIncoming,
+  Calendar,
+  Book,
 } from "lucide-react";
 import type { ThemeType } from "@/App";
 import { useEffect, useRef, useState } from "react";
-import ActivityList from "../ActivityList";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import {
@@ -32,7 +31,6 @@ import {
   PatientAssessmentList,
   PatientAssessmentUpdate,
 } from "@/models/auth";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PatientAppointments from "./PatientAppointments";
 import MedicineTab from "./MedicineTab";
 
@@ -51,7 +49,7 @@ interface Patient {
   occupation: string;
   education: string;
   address: string;
-  patient_id: number; // Changed from string to number
+  patient_id: number;
   doctor_name: string;
   doctor_role: string;
   assigned_at: string;
@@ -99,7 +97,7 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
   const [fullReportDialog, setFullReportDialog] = useState(false);
   const [patientReportDialog, setPatientReportDialog] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [patientPdf,setPatientPdf]= useState<string | null>(null);
+  const [patientPdf, setPatientPdf] = useState<string | null>(null);
   const [patientSummaryUrl, setPatientSummaryUrl] = useState<string | null>(
     null
   );
@@ -118,19 +116,22 @@ const PatientDataTab = ({ theme = "green" }: PatientDataTabProps) => {
   const [showModal, setShowModal] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
-const [editingId, setEditingId] = useState<number | null>(null);
-const [editValue, setEditValue] = useState<string>("");
-const [updateLoading, setUpdateLoading] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState<string>("");
+  const [updateLoading, setUpdateLoading] = useState<number | null>(null);
+  const [showAppointments, setShowAppointments] = useState(false);
 
   // Helper function to safely access patient summary
   const getSafePatientSummary = (chatData: DiagnosisData | null) => {
     if (!chatData?.ai_report) return null;
-    
+
     // Try different possible paths for patient summary
-    return chatData.ai_report.patient_report?.patient_summary ||
-           chatData.ai_report.patient_summary ||
-           chatData.ai_report.therapist_report?.patient_summary ||
-           null;
+    return (
+      chatData.ai_report.patient_report?.patient_summary ||
+      chatData.ai_report.patient_summary ||
+      chatData.ai_report.therapist_report?.patient_summary ||
+      null
+    );
   };
 
   useEffect(() => {
@@ -154,19 +155,17 @@ const [updateLoading, setUpdateLoading] = useState<number | null>(null);
       setIsLoading(true);
       try {
         const data = await patientDetails(userId);
-        // console.log("patientDetails:", data.mobile_number);
-localStorage.setItem("voxPhonNo",data.mobile_number)
+        localStorage.setItem("voxPhonNo", data.mobile_number);
+
         // Assuming the API returns an array and we want the first patient
         const patient = Array.isArray(data) ? data[0] : data;
-        // console.log("Full deal data patient", patient);
         setPatientData(patient);
 
         if (Array.isArray(patient.diagnosis) && patient.diagnosis.length > 0) {
           const lastItem = patient.diagnosis[patient.diagnosis.length - 1];
-          // console.log("lastItem**##", lastItem.ai_patient_summary_file);
           setChatData(lastItem);
-          setPatientPdf(lastItem.ai_patient_summary_file || "")
-          
+          setPatientPdf(lastItem.ai_patient_summary_file || "");
+
           // Safe access to patient summary
           const patientSummary = getSafePatientSummary(lastItem);
           setSummary(patientSummary);
@@ -196,7 +195,7 @@ localStorage.setItem("voxPhonNo",data.mobile_number)
           } else if (diagnosisWithPatientSummary) {
             setDiagnosisData(diagnosisWithPatientSummary);
           } else {
-            setDiagnosisData(patient.diagnosis[patient.diagnosis.length-1]);
+            setDiagnosisData(patient.diagnosis[patient.diagnosis.length - 1]);
           }
         }
       } catch (error) {
@@ -224,11 +223,9 @@ localStorage.setItem("voxPhonNo",data.mobile_number)
         const response: AssessmentResponse = await PatientAssessmentList(
           Number(patientData?.id)
         );
-        // console.log("assessment data:", response);
 
         if (response.status === "ok" && response.data) {
           setAssessmentData(response.data);
-          // console.log("AAA",response.data)
         } else {
           setError("Failed to fetch assessment data");
         }
@@ -249,44 +246,6 @@ localStorage.setItem("voxPhonNo",data.mobile_number)
 
   const handleCallOpen = () => {
     setIsSheetOpen(true);
-  };
-
-  const getThemeClasses = () => {
-    switch (theme) {
-      case "royal":
-        return "bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 shadow-lg hover:shadow-purple-300";
-      case "ocean":
-        return "bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 shadow-lg hover:shadow-blue-300";
-      case "emerald":
-        return "bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-200 shadow-lg hover:shadow-emerald-300";
-      case "sunset":
-        return "bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 shadow-lg hover:shadow-orange-300";
-      case "pink":
-        return "bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200 shadow-lg hover:shadow-pink-300";
-      case "green":
-        return "bg-gradient-to-br from-teal-50 to-green-50 border-2 border-teal-200 shadow-lg hover:shadow-teal-300";
-      default:
-        return "bg-white border-2 border-gray-200 shadow-lg";
-    }
-  };
-
-  const getButtonClass = () => {
-    switch (theme) {
-      case "royal":
-        return "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl";
-      case "ocean":
-        return "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl";
-      case "emerald":
-        return "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl";
-      case "sunset":
-        return "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-lg hover:shadow-xl";
-      case "pink":
-        return "bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white shadow-lg hover:shadow-xl";
-      case "green":
-        return "bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl";
-      default:
-        return "bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg";
-    }
   };
 
   const handleOpenPdfDialog = async () => {
@@ -348,23 +307,52 @@ localStorage.setItem("voxPhonNo",data.mobile_number)
     };
   }, [pdfUrl]);
 
-  const getStatusBadge = (status: string) => {
-    const baseClasses =
-      "px-3 py-1 rounded-full text-xs font-medium border-2 transform transition-all duration-200 hover:scale-105";
-    switch (status) {
-      case "true":
-        return `${baseClasses} bg-green-100 text-green-800 border-green-300 shadow-sm`;
-      case "false":
-        return `${baseClasses} bg-yellow-100 text-yellow-800 border-yellow-300 shadow-sm`;
-      default:
-        return `${baseClasses} bg-red-100 text-red-800 border-red-300 shadow-sm`;
+  const handleEditStart = (item: AssessmentQuestion) => {
+    // Only allow editing if response_text is null or empty
+    if (!item.response_text || item.response_text.trim() === "") {
+      setEditingId(item.id);
+      setEditValue(item.response_text || "");
     }
+  };
+
+  const handleEditCancel = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const handleEditSave = async (id: number) => {
+    if (!editValue.trim()) return;
+
+    setUpdateLoading(id);
+    try {
+      await PatientAssessmentUpdate(id, editValue.trim());
+
+      // Update local state
+      setAssessmentData((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, response_text: editValue.trim() } : item
+        )
+      );
+
+      setEditingId(null);
+      setEditValue("");
+    } catch (error) {
+      console.error("Error updating assessment:", error);
+    } finally {
+      setUpdateLoading(null);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    return status === "true"
+      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+      : "bg-amber-50 text-amber-700 border border-amber-200";
   };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -397,168 +385,135 @@ localStorage.setItem("voxPhonNo",data.mobile_number)
 
     return "No patient summary available";
   };
-//   const handleEditStart = (item: AssessmentQuestion) => {
-//   setEditingId(item.id);
-//   setEditValue(item.response_text);
-// };
 
-// const handleEditCancel = () => {
-//   setEditingId(null);
-//   setEditValue("");
-// };
-// const handleEditSave = async (id: number) => {
-//   if (!editValue.trim()) return;
-  
-//   setUpdateLoading(id);
-//   try {
-//     await PatientAssessmentUpdate(id, editValue.trim());
-    
-//     // Update local state
-//     setAssessmentData(prev => 
-//       prev.map(item => 
-//         item.id === id 
-//           ? { ...item, response_text: editValue.trim() }
-//           : item
-//       )
-//     );
- 
-//      toast({
-//         title: "Success",
-//         description:    "response added successfully",
-//         variant: "destructive",
-//       });
-//     setEditingId(null);
-//     setEditValue("");
-
-//   } catch (error) {
-//       toast({
-//         title: "Error",
-//         description: "Error updating assessment",
-//         variant: "destructive",
-//       });
-//     console.error("Error updating assessment:", error);
-//     // You might want to show an error message to user
-//   } finally {
-//     setUpdateLoading(null);
-//   }
-// };
-const handleEditStart = (item: AssessmentQuestion) => {
-  // Only allow editing if response_text is null or empty
-  if (!item.response_text || item.response_text.trim() === '') {
-    setEditingId(item.id);
-    setEditValue(item.response_text || '');
-  }
-};
-
-const handleEditCancel = () => {
-  setEditingId(null);
-  setEditValue("");
-};
-
-const handleEditSave = async (id: number) => {
-  if (!editValue.trim()) return;
-  
-  setUpdateLoading(id);
-  try {
-    await PatientAssessmentUpdate(id, editValue.trim());
-    
-    // Update local state
-    setAssessmentData(prev => 
-      prev.map(item => 
-        item.id === id 
-          ? { ...item, response_text: editValue.trim() }
-          : item
-      )
-    );
-    
-    setEditingId(null);
-    setEditValue("");
-  } catch (error) {
-    console.error("Error updating assessment:", error);
-    // You might want to show an error message to user
-  } finally {
-    setUpdateLoading(null);
-  }
-};
   const summaryText = getPatientSummary();
   const isChatEnabled = patientData?.chat_enabled;
-  // console.log("isChatEnabled@@@@@@@@@@@", isChatEnabled);
   const isPreliminary = chatData?.is_preliminary;
-  // console.log("isPreliminary..........", isPreliminary);
+
+  const handleAppointmentCardClick = () => {
+    setShowAppointments(true);
+  };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-6">
-      <div className="flex-1">
+    <div className="p-6 bg-gray-50/50">
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Patient ID</p>
+              <p className="text-2xl font-bold">{patientData.patient_id}</p>
+            </div>
+            <div className="bg-emerald-50 p-3 rounded-full">
+              <User className="h-5 w-5 text-emerald-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Assessments</p>
+              <p className="text-2xl font-bold">{assessmentData.length}</p>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-full">
+              <Book className="h-5 w-5 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        
         <Card
-          className={`overflow-hidden rounded-xl ${getThemeClasses()} transition-all duration-300`}
+          className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden ${
+            patientData.diagnosis?.some(
+              (d: DiagnosisData) => d.ai_patient_summary_file
+            )
+              ? "cursor-pointer hover:shadow-md transition-shadow" // Add hover effects for clickable
+              : ""
+          }`}
+          onClick={() => {
+            if (
+              patientData.diagnosis?.some(
+                (d: DiagnosisData) => d.ai_patient_summary_file
+              )
+            ) {
+              handleOpenPatientSummary();
+            }
+          }}
         >
-          <div className="relative">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Available Reports</p>
+              {patientData.diagnosis?.some(
+                (d: DiagnosisData) => d.ai_patient_summary_file
+              ) ? (
+                <p className="text-xl font-bold text-blue-600">View Summary</p> // Changed text to indicate what opens
+              ) : (
+                <p className="text-2xl font-bold text-gray-400">
+                  Not Available
+                </p>
+              )}
+            </div>
             <div
-              className={`absolute inset-0 bg-gradient-to-r ${
-                theme === "green"
-                  ? "from-teal-500/10 to-green-500/10"
-                  : "from-gray-500/10 to-gray-600/10"
+              className={`p-3 rounded-full ${
+                patientData.diagnosis?.some(
+                  (d: DiagnosisData) => d.ai_patient_summary_file
+                )
+                  ? "bg-blue-50"
+                  : "bg-gray-100"
               }`}
-            ></div>
-            <div className="relative p-6">
-              <div className="flex items-start space-x-4">
-                <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
-                  <AvatarFallback
-                    className={`text-2xl font-bold ${
-                      theme === "green"
-                        ? "bg-gradient-to-br from-teal-500 to-teal-800 text-white"
-                        : "bg-gradient-to-br from-gray-500 to-gray-600 text-white"
-                    }`}
-                  >
+            >
+              {patientData.diagnosis?.some(
+                (d: DiagnosisData) => d.ai_patient_summary_file
+              ) ? (
+                <FileText className="h-5 w-5 text-blue-600" />
+              ) : (
+                <FileText className="h-5 w-5 text-gray-400" />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Column */}
+        <div className="lg:col-span-2">
+          {/* Patient Profile Card */}
+          <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 border-b border-gray-100">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-20 w-20 border-4 border-white shadow-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xl font-bold">
                     {patientData.patient_name ? (
                       patientData.patient_name.charAt(0).toUpperCase()
                     ) : (
-                      <User className="w-10 h-10" />
+                      <User />
                     )}
                   </AvatarFallback>
                 </Avatar>
 
                 <div className="flex-1">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                      <h2 className="text-2xl font-bold text-gray-800">
                         {patientData.patient_name || email || "Unknown Patient"}
                       </h2>
-                      <p className="text-gray-600 mb-2">
-                        <span className="font-semibold">{patientData.age}</span>{" "}
+                      <p className="text-gray-600">
+                        <span className="font-medium">{patientData.age}</span>{" "}
                         years •
-                        <span className="font-semibold ml-1">
+                        <span className="font-medium ml-1">
                           {patientData.gender || "N/A"}
                         </span>
                       </p>
-                      {/* <p className="text-sm text-gray-500">
-                        <span className="font-medium">Doctor:</span>{" "}
-                        {patientData.doctor_name || "Not assigned"}
-                      </p> */}
                     </div>
 
-                    <div className="text-right space-y-3">
-                      <span
-                        className={getStatusBadge(patientData.chat_enabled)}
-                      >
-                        {isChatEnabled === "true" ? (
-                          <>
-                            <CheckCircle className="w-4 h-4 inline mr-1" /> Chat
-                            Enabled
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-4 h-4 inline mr-1" /> Chat
-                            Disabled
-                          </>
-                        )}
-                      </span>
-
-                      <div className="flex space-x-3">
-                        {isChatEnabled  && (
+                    <div className="flex flex-col sm:items-end gap-2">
+                      <div className="flex gap-2">
+                        {isChatEnabled === "true" && (
                           <Button
                             onClick={handleChatbotOpen}
-                            className={`${getButtonClass()} transition-all duration-300 transform hover:scale-105`}
+                            size="sm"
+                            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-sm"
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             Metro Mind AI
@@ -568,377 +523,183 @@ const handleEditSave = async (id: number) => {
                       </div>
                     </div>
                   </div>
-
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                    <div className="bg-white/50 rounded-lg p-3">
-                      <p className="text-gray-500">Email</p>
-                      <p className="font-semibold text-gray-800">
-                        {patientData.email}
-                      </p>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-3">
-                      <p className="text-gray-500">Mobile</p>
-                      <p className="font-semibold text-gray-800">
-                        {patientData.mobile_number || "N/A"}
-                      </p>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-3">
-                      <p className="text-gray-500">Education</p>
-                      <p className="font-semibold text-gray-800">
-                        {patientData.education || "N/A"}
-                      </p>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-3">
-                      <p className="text-gray-500">Address</p>
-                      <p className="font-semibold text-gray-800">
-                        {patientData.address || "N/A"}
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
-            </div>
+            </CardHeader>
+
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Email</p>
+                  <p className="font-medium text-gray-800">
+                    {patientData.email}
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Mobile</p>
+                  <p className="font-medium text-gray-800">
+                    {patientData.mobile_number || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Education</p>
+                  <p className="font-medium text-gray-800">
+                    {patientData.education || "N/A"}
+                  </p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-500 mb-1">Address</p>
+                  <p className="font-medium text-gray-800">
+                    {patientData.address || "N/A"}
+                  </p>
+                </div>
+              </div>
+
+             
+            </CardContent>
+          </Card>
+
+          {/* Appointments Section */}
+          <div className="mb-6">
+            <PatientAppointments theme="green" />
           </div>
 
-          {/* Reports Section */}
-          
-          {/* {isPreliminary === "true" && ( */}
-             {isPreliminary && ( 
-            <div className="border-t border-gray-200 bg-white/30 p-6">
-              <h4 className="text-lg font-bold mb-4 text-gray-800">
-                Available Reports
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {patientData.diagnosis?.some(
-                  (d: DiagnosisData) => d.ai_patient_summary_file
-                ) && (
-                  <Button
-                    onClick={handleOpenPatientSummary}
-                    variant="outline"
-                    className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 transform hover:scale-105"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Patient Summary
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Patient Summary Section */}
-                    {isPreliminary && (
-          // {isPreliminary === "true" && (
-            <div className="border-t border-gray-200 bg-blue-50/50 p-6">
-              <h4 className="text-lg font-bold mb-3 text-blue-800">
-                Patient Summary
-              </h4>
-              <div className="bg-white/70 rounded-lg p-4">
-                <p className="text-gray-700 leading-relaxed">
-                  {summaryText}
-                </p>
-              </div>
-              <button
-                className="mt-2 text-blue-600 hover:underline"
-                onClick={() => setShowModal(true)}
-              >
-                Show More
-              </button>
-              {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-                  <div className="bg-white rounded-lg p-6 max-w-xl w-full">
-                    <h4 className="text-lg font-bold mb-4">
-                      Full Patient Summary
-                    </h4>
-                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {summary || summaryText || "No patient summary available"}
-                    </p>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      className="mt-4 text-blue-600 hover:underline"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </Card>
-        <div className="mt-6">
+          {/* Medicine Tab */}
           <MedicineTab theme={theme} />
         </div>
-      </div>
 
-      {/* Recent Activity and Assessment Questions Card */}
-      <div className="w-full lg:w-96">
-        <Card className={`h-fit ${getThemeClasses()}`}>
-          <Tabs defaultValue="assessment" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 rounded-t-xl">
-              
-              {/* <TabsTrigger value="activity" className="rounded-tl-xl">
-                Recent Activity
-              </TabsTrigger> */}
-                   <TabsTrigger value="assessment" className="rounded-tr-xl">
-                Assessment Q&A
-              </TabsTrigger>
-         
-            </TabsList>
-{/* 
-            <TabsContent value="activity" className="p-0">
-              <CardContent className="p-6">
-                <ActivityList theme={theme} />
-              </CardContent>
-            </TabsContent> */}
+        {/* Sidebar Column */}
+        <div className="space-y-6">
+          {/* Assessment Questions Card */}
+          <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <CardHeader className="p-4 border-b border-gray-100">
+              <CardTitle className="text-lg font-bold text-gray-800 flex items-center">
+                <Activity className="w-5 h-5 mr-2 text-emerald-600" />
+                Assessment Questions
+              </CardTitle>
+            </CardHeader>
 
-            {/* <TabsContent value="assessment" className="p-0">
-              <CardContent className="p-6">
-                <CardTitle className="text-lg mb-4 text-gray-800">
-                  Assessment Questions
-                </CardTitle>
-                {assessmentLoading ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-teal-500 border-t-transparent"></div>
-                  </div>
-                ) : error ? (
-                  <div className="text-red-500 text-center py-4">{error}</div>
-                ) : assessmentData.length > 0 ? (
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
-                    {assessmentData.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="bg-white/70 rounded-lg p-4 shadow-sm border border-gray-200"
-                      >
-                        <div className="space-y-2">
-                          <p className="font-semibold text-gray-700 text-sm">
-                            Q{index + 1}: {item.question_text}
-                          </p>
-                          <p className="text-gray-600 text-sm bg-gray-50 rounded p-2">
-                            {item.response_text}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(item.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
+            <CardContent className="p-0">
+              {assessmentLoading ? (
+                <div className="flex justify-center items-center  p-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-emerald-500 border-t-transparent"></div>
+                </div>
+              ) : error ? (
+                <div className="text-red-500 text-center py-4 px-6">
+                  {error}
+                </div>
+              ) : assessmentData.length > 0 ? (
+                <div className="max-h-[200px] overflow-y-auto divide-y divide-gray-100">
+                  {assessmentData.map((item, index) => (
+                    <div key={item.id} className="p-4 hover:bg-gray-50">
+                      <div className="space-y-2">
+                        <p className="font-medium text-gray-800 text-sm">
+                          Q{index + 1}: {item.question_text}
+                        </p>
+
+                        {editingId === item.id ? (
+                          // Edit mode
+                          <div className="space-y-2">
+                            <textarea
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
+                              className="w-full p-2 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              rows={3}
+                              placeholder="Enter your answer..."
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditSave(item.id)}
+                                disabled={
+                                  updateLoading === item.id || !editValue.trim()
+                                }
+                                className="px-3 py-1 bg-emerald-500 text-white text-xs rounded-lg hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                              >
+                                {updateLoading === item.id ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
+                                    Saving...
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </button>
+                              <button
+                                onClick={handleEditCancel}
+                                disabled={updateLoading === item.id}
+                                className="px-3 py-1 bg-gray-500 text-white text-xs rounded-lg hover:bg-gray-600 disabled:opacity-50"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          // View mode
+                          <div className="flex justify-between items-start gap-2">
+                            {item.response_text &&
+                            item.response_text.trim() !== "" ? (
+                              // Has answer - show answer only
+                              <p className="text-gray-600 text-sm bg-gray-50 rounded-lg p-2 flex-1">
+                                {item.response_text}
+                              </p>
+                            ) : (
+                              // No answer - show placeholder and edit button
+                              <>
+                                <p className="text-gray-400 text-sm bg-gray-50 rounded-lg p-2 flex-1 italic">
+                                  No answer provided yet
+                                </p>
+                                <button
+                                  onClick={() => handleEditStart(item)}
+                                  className="px-2 py-1 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                                  title="Add answer"
+                                >
+                                  Answer
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
+
+                        <p className="text-xs text-gray-400">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 text-center py-8">
-                    No assessment questions available
-                  </div>
-                )}
-              </CardContent>
-            </TabsContent> */}
-            {/* <TabsContent value="assessment" className="p-0">
-  <CardContent className="p-6">
-    <CardTitle className="text-lg mb-4 text-gray-800">
-      Assessment Questions
-    </CardTitle>
-    {assessmentLoading ? (
-      <div className="flex justify-center items-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-teal-500 border-t-transparent"></div>
-      </div>
-    ) : error ? (
-      <div className="text-red-500 text-center py-4">{error}</div>
-    ) : assessmentData.length > 0 ? (
-      <div className="space-y-4 max-h-96 overflow-y-auto">
-        {assessmentData.map((item, index) => (
-          <div
-            key={item.id}
-            className="bg-white/70 rounded-lg p-4 shadow-sm border border-gray-200"
-          >
-            <div className="space-y-2">
-              <p className="font-semibold text-gray-700 text-sm">
-                Q{index + 1}: {item.question_text}
-              </p>
-              
-              {editingId === item.id ? (
-                // Edit mode
-                <div className="space-y-2">
-                  <textarea
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    rows={3}
-                    placeholder="Enter your answer..."
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditSave(item.id)}
-                      disabled={updateLoading === item.id || !editValue.trim()}
-                      className="px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                    >
-                      {updateLoading === item.id ? (
-                        <>
-                          <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
-                          Saving...
-                        </>
-                      ) : (
-                        'Save'
-                      )}
-                    </button>
-                    <button
-                      onClick={handleEditCancel}
-                      disabled={updateLoading === item.id}
-                      className="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                // View mode
-                <div className="flex justify-between items-start gap-2">
-                  <p className="text-gray-600 text-sm bg-gray-50 rounded p-2 flex-1">
-                    {item.response_text}
-                  </p>
-                  <button
-                    onClick={() => handleEditStart(item)}
-                    className="px-2 py-1 text-xs text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
-                    title="Edit answer"
-                  >
-                    Edit
-                  </button>
+                <div className="text-gray-500 text-center py-8 px-6">
+                  No assessment questions available
                 </div>
               )}
-              
-              <p className="text-xs text-gray-400">
-                {new Date(item.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div className="text-gray-500 text-center py-8">
-        No assessment questions available
-      </div>
-    )}
-  </CardContent>
-</TabsContent> */}
-<TabsContent value="assessment" className="p-0">
-  <CardContent className="p-6">
-    <CardTitle className="text-lg mb-4 text-gray-800">
-      Assessment Questions
-    </CardTitle>
-    {assessmentLoading ? (
-      <div className="flex justify-center items-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-teal-500 border-t-transparent"></div>
-      </div>
-    ) : error ? (
-      <div className="text-red-500 text-center py-4">{error}</div>
-    ) : assessmentData.length > 0 ? (
-      <div className="space-y-4 max-h-96 overflow-y-auto">
-        {assessmentData.map((item, index) => (
-          <div
-            key={item.id}
-            className="bg-white/70 rounded-lg p-4 shadow-sm border border-gray-200"
-          >
-            <div className="space-y-2">
-              <p className="font-semibold text-gray-700 text-sm">
-                Q{index + 1}: {item.question_text}
-              </p>
-              
-              {editingId === item.id ? (
-                // Edit mode
-                <div className="space-y-2">
-                  <textarea
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    className="w-full p-2 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    rows={3}
-                    placeholder="Enter your answer..."
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditSave(item.id)}
-                      disabled={updateLoading === item.id || !editValue.trim()}
-                      className="px-3 py-1 bg-teal-500 text-white text-xs rounded hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                    >
-                      {updateLoading === item.id ? (
-                        <>
-                          <div className="animate-spin rounded-full h-3 w-3 border border-white border-t-transparent"></div>
-                          Saving...
-                        </>
-                      ) : (
-                        'Save'
-                      )}
-                    </button>
-                    <button
-                      onClick={handleEditCancel}
-                      disabled={updateLoading === item.id}
-                      className="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                // View mode
-                <div className="flex justify-between items-start gap-2">
-                  {item.response_text && item.response_text.trim() !== '' ? (
-                    // Has answer - show answer only
-                    <p className="text-gray-600 text-sm bg-gray-50 rounded p-2 flex-1">
-                      {item.response_text}
-                    </p>
-                  ) : (
-                    // No answer - show placeholder and edit button
-                    <>
-                      <p className="text-gray-400 text-sm bg-gray-50 rounded p-2 flex-1 italic">
-                        No answer provided yet
-                      </p>
-                      <button
-                        onClick={() => handleEditStart(item)}
-                        className="px-2 py-1 text-xs text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
-                        title="Add answer"
-                      >
-                        Answer
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-              
-              <p className="text-xs text-gray-400">
-                {new Date(item.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <div className="text-gray-500 text-center py-8">
-        No assessment questions available
-      </div>
-    )}
-  </CardContent>
-</TabsContent>
-          </Tabs>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Diagnosis Information */}
-        <div className="w-full lg:w-96 mt-6">
-          <Card className={`h-fit ${getThemeClasses()}`}>
-            {diagnosisData && (
-              <div className="border-t border-gray-200 bg-white/30 p-6">
-                <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-                  <Activity className="w-5 h-5 mr-2 text-teal-600" />
+          {/* Diagnosis Information */}
+          {diagnosisData && (
+            <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <CardHeader className="p-4 border-b border-gray-100">
+                <CardTitle className="text-lg font-bold text-gray-800 flex items-center">
+                  <Activity className="w-5 h-5 mr-2 text-emerald-600" />
                   Diagnosis Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  <div className="bg-white/50 rounded-lg p-3">
-                    <p className="text-gray-500">Created</p>
-                    <p className="font-semibold">
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Created</p>
+                    <p className="font-medium text-sm">
                       {new Date(diagnosisData.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="bg-white/50 rounded-lg p-3">
-                    <p className="text-gray-500">Status</p>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Status</p>
                     <p
-                      className={`font-semibold ${
+                      className={`font-medium text-sm ${
                         diagnosisData.is_approved === "true"
-                          ? "text-green-600"
-                          : "text-yellow-600"
+                          ? "text-emerald-600"
+                          : "text-amber-600"
                       }`}
                     >
                       {diagnosisData.is_approved === "true"
@@ -946,24 +707,26 @@ const handleEditSave = async (id: number) => {
                         : "Pending Review"}
                     </p>
                   </div>
-                  <div className="bg-white/50 rounded-lg p-3">
-                    <p className="text-gray-500">Type</p>
-                    <p className="font-semibold">
-                      {diagnosisData.is_preliminary === "true" ? "Preliminary" : "Final"}
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Type</p>
+                    <p className="font-medium text-sm">
+                      {diagnosisData.is_preliminary === "true"
+                        ? "Preliminary"
+                        : "Final"}
                     </p>
                   </div>
                   {diagnosisData.ai_report?.therapist_report?.Severity && (
-                    <div className="bg-white/50 rounded-lg p-3">
-                      <p className="text-gray-500">Severity</p>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-1">Severity</p>
                       <p
-                        className={`font-semibold ${
+                        className={`font-medium text-sm ${
                           diagnosisData.ai_report.therapist_report.Severity ===
                           "critical"
                             ? "text-red-600"
                             : diagnosisData.ai_report.therapist_report
                                 .Severity === "high"
                             ? "text-orange-600"
-                            : "text-yellow-600"
+                            : "text-amber-600"
                         }`}
                       >
                         {diagnosisData.ai_report.therapist_report.Severity}
@@ -971,72 +734,73 @@ const handleEditSave = async (id: number) => {
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Enquiry Details */}
-        <div className="w-full lg:w-96 mt-6">
-          <Card className={`h-fit ${getThemeClasses()}`}>
-            <div className="border-t border-gray-200 bg-gray-50/50 p-6">
-              <h3 className="text-xl font-bold mb-4 text-gray-800 flex items-center">
-                <PhoneIncoming className="w-5 h-5 mr-2 text-teal-600" />
+          {/* Enquiry Information */}
+          <Card className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <CardHeader className="p-4 border-b border-gray-100">
+              <CardTitle className="text-lg font-bold text-gray-800 flex items-center">
+                <PhoneIncoming className="w-5 h-5 mr-2 text-emerald-600" />
                 Enquiry Information
-              </h3>
+              </CardTitle>
+            </CardHeader>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div className="bg-white/50 rounded-lg p-3">
-                  <p className="text-gray-500">Created Date</p>
-                  <p className="font-semibold">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-1">Created Date</p>
+                  <p className="font-medium text-sm">
                     {diagnosisData
                       ? new Date(diagnosisData.created_at).toLocaleDateString()
                       : "N/A"}
                   </p>
                 </div>
-                <div className="bg-white/50 rounded-lg p-3">
-                  <p className="text-gray-500">Assigned At</p>
-                  <p className="font-semibold">
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-1">Assigned At</p>
+                  <p className="font-medium text-sm">
                     {patientData.assigned_at
                       ? new Date(patientData.assigned_at).toLocaleDateString()
                       : "N/A"}
                   </p>
                 </div>
-                <div className="bg-white/50 rounded-lg p-3">
-                  <p className="text-gray-500">Patient ID</p>
-                  <p className="font-semibold">{patientData.patient_id}</p>
+                <div className="bg-gray-50 rounded-lg p-3 sm:col-span-2">
+                  <p className="text-xs text-gray-500 mb-1">Patient ID</p>
+                  <p className="font-medium text-sm">
+                    {patientData.patient_id}
+                  </p>
                 </div>
               </div>
-            </div>
+            </CardContent>
           </Card>
         </div>
+      </div>
 
-        <div className="mt-6">
-          <PatientAppointments theme={theme} />
-        </div>
-        <Dialog open={fullReportDialog} onOpenChange={setFullReportDialog}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh]">
-          <DialogHeader>
-            <DialogTitle className="text-center text-teal-800 text-xl">
+      {/* PDF Dialogs */}
+      <Dialog open={fullReportDialog} onOpenChange={setFullReportDialog}>
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] p-0 rounded-xl overflow-hidden">
+          <DialogHeader className="p-4 border-b border-gray-100">
+            <DialogTitle className="text-center text-emerald-800 text-xl">
               Complete AI Assessment Report
             </DialogTitle>
           </DialogHeader>
-          <div className="h-[75vh] overflow-auto border rounded-lg bg-white shadow-inner">
+          <div className="h-[75vh] overflow-auto bg-white">
             {pdfUrl ? (
               <iframe
                 src={pdfUrl}
                 title="AI Report PDF"
                 width="100%"
                 height="100%"
-                className="border-0 rounded-lg"
+                className="border-0"
               />
             ) : (
               <div className="flex justify-center items-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent"></div>
               </div>
             )}
           </div>
-          <DialogFooter className="flex justify-between items-center">
+          <DialogFooter className="flex justify-between items-center p-4 border-t border-gray-100">
             <Button
               variant="outline"
               onClick={() => {
@@ -1047,13 +811,13 @@ const handleEditSave = async (id: number) => {
                   );
                 }
               }}
-              className="text-teal-600 border-teal-200 hover:bg-teal-50"
+              className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
             >
               <Download className="w-4 h-4 mr-2" /> Download
             </Button>
             <Button
               onClick={() => setFullReportDialog(false)}
-              className={getButtonClass()}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
             >
               Close
             </Button>
@@ -1063,20 +827,20 @@ const handleEditSave = async (id: number) => {
 
       {/* Patient Summary Dialog */}
       <Dialog open={patientReportDialog} onOpenChange={setPatientReportDialog}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh]">
-          <DialogHeader>
+        <DialogContent className=" sm:max-w-5xl max-h-[90vh] p-0 rounded-xl overflow-hidden">
+          <DialogHeader className="p-4 border-b border-gray-100">
             <DialogTitle className="text-center text-blue-800 text-xl">
               Patient Summary Report
             </DialogTitle>
           </DialogHeader>
-          <div className="h-[75vh] overflow-auto border rounded-lg bg-white shadow-inner">
+          <div className="h-[75vh] overflow-auto bg-white">
             {patientPdf ? (
               <iframe
                 src={patientPdf}
                 title="Patient Summary PDF"
                 width="100%"
                 height="100%"
-                className="border-0 rounded-lg"
+                className="border-0"
               />
             ) : (
               <div className="flex justify-center items-center h-full text-gray-500">
@@ -1084,7 +848,7 @@ const handleEditSave = async (id: number) => {
               </div>
             )}
           </div>
-          <DialogFooter className="flex justify-between items-center">
+          <DialogFooter className="flex justify-between items-center p-4 border-t border-gray-100">
             <Button
               variant="outline"
               onClick={() => {
@@ -1101,7 +865,27 @@ const handleEditSave = async (id: number) => {
             </Button>
             <Button
               onClick={() => setPatientReportDialog(false)}
-              className={getButtonClass()}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Appointments Dialog */}
+      <Dialog open={showAppointments} onOpenChange={setShowAppointments}>
+        <DialogContent className="sm:max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Your Appointments</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <PatientAppointments theme="green" />
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setShowAppointments(false)}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
             >
               Close
             </Button>
@@ -1109,6 +893,7 @@ const handleEditSave = async (id: number) => {
         </DialogContent>
       </Dialog>
     </div>
-    </div>
-  );}
-  export default PatientDataTab;
+  );
+};
+
+export default PatientDataTab;

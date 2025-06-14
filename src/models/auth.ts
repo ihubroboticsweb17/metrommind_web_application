@@ -107,19 +107,26 @@ export const register = async (
   return response.data;
 };
 export const login = async (email: string, password: string) => {
+  // Clear previous data
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("loginData");
+  localStorage.removeItem("first_time");
+  localStorage.removeItem("ai_report_generated");
+
   const response = await api.post("accounts/login/", { email, password });
   const data = response.data.data;
-  localStorage.setItem("loginData", data);
+
+  // Set new data
+  localStorage.setItem("loginData", JSON.stringify(data));
   localStorage.setItem("access_token", data.access_token);
   localStorage.setItem("refresh_token", data.refresh_token);
+  localStorage.setItem("ai_report_generated", data.ai_report_generated);
   localStorage.setItem("role", data.role);
   localStorage.setItem("name", data.name);
   localStorage.setItem("user_id", data.user_id.toString());
   localStorage.setItem("email", data.email);
-  localStorage.setItem("first", data.first_time);
+  localStorage.setItem("first_time", data.first_time);
   return data;
 };
 
@@ -245,11 +252,13 @@ export const ForgotPasswordSentOpt = async (
   return response.data;
 };
 export const VerifyOtpAndResetPassword = async (
- id: string | number,
-  formData:any
+  id: string | number,
+  formData: any
 ) => {
   try {
-    const response = await api.post(`forgott_password/verify/otp/${id}/`,{formData});
+    const response = await api.post(`forgott_password/verify/otp/${id}/`, {
+      formData,
+    });
     console.log("OTP verification response:", response);
     return response;
   } catch (error: any) {
@@ -257,12 +266,11 @@ export const VerifyOtpAndResetPassword = async (
     throw error;
   }
 };
-export const ResetPassword = async (
- id: string | number,
-  formData:any
-) => {
+export const ResetPassword = async (id: string | number, formData: any) => {
   try {
-    const response = await api.post(`forgott_password/new/password/${id}/`,{formData});
+    const response = await api.post(`forgott_password/new/password/${id}/`, {
+      formData,
+    });
     console.log("OTP verification response:", response);
     return response;
   } catch (error: any) {
@@ -593,52 +601,6 @@ export const PatientChat = async (message: string, sessionId: string) => {
 
 //   return response.data;
 // };
-// export const PatientAssessmentAdd = async (id: number) => {
-//   try {
-//     const token = localStorage.getItem("access_token");
-
-//     if (!token) {
-//       throw new Error("No access token found. Please log in.");
-//     }
-//     // const userid=localStorage.getItem("user_id")
-//     const response = await api.patch(`/thoughts/thoughts/update/${id}/`, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     });
-
-//     return response.data;
-//   } catch (error: any) {
-//     console.error("Error :", error);
-//     throw error;
-//   }
-// };
-export const PatientAssessmentUpdate = async (id: number, responseText: string) => {
-  try {
-    const token = localStorage.getItem("access_token");
-    
-    if (!token) {
-      throw new Error("No access token found. Please log in.");
-    }
-
-    const response = await api.patch(`/thoughts/thoughts/update/${id}/`, 
-      {
-        response_text: responseText, // Send the updated response text
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Error updating assessment:", error);
-    throw error;
-  }
-};
 export const PatientAssessmentList = async (id: number) => {
   try {
     const token = localStorage.getItem("access_token");
@@ -648,26 +610,6 @@ export const PatientAssessmentList = async (id: number) => {
     }
     // const userid=localStorage.getItem("user_id")
     const response = await api.get(`thoughts/patient-thoughts/list/${id}/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching patient list:", error);
-    throw error;
-  }
-};
-export const PatientAppoinmentList = async (id: number) => {
-  try {
-    const token = localStorage.getItem("access_token");
-
-    if (!token) {
-      throw new Error("No access token found. Please log in.");
-    }
-    // const userid=localStorage.getItem("user_id")
-    const response = await api.get("appointment/appointment/list/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1029,40 +971,6 @@ export const AllReportList = async () => {
     throw error;
   }
 };
-export const DoctorCallvoxbay = async (
-  formData: any,
-  headers = {
-    "Content-Type": "application/json",
-  }
-) => {
-  const response = await api.post(
-    "voxbay/click-to-call/",
-    formData,
-    {
-      headers,
-    }
-  );
-  const data = response;
-  console.log("data");
-  return response.data;
-};
-export const DoctorCallvoxbayCreat = async (
-  formData: any,
-  headers = {
-    "Content-Type": "application/json",
-  }
-) => {
-  const response = await api.post(
-    "voxbay/api/voxbay/create/",
-    formData,
-    {
-      headers,
-    }
-  );
-  const data = response;
-  console.log("data");
-  return response.data;
-};
 export const AllPatientReports = async (
   formData: any,
   headers = {
@@ -1120,27 +1028,7 @@ export const AvailableDoctorsList = async () => {
       throw new Error("No access token found. Please log in.");
     }
 
-    const response = await api.get("accounts/available-doctors/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching patient list:", error);
-    throw error;
-  }
-};
-export const Reappointment = async () => {
-  try {
-    const token = localStorage.getItem("access_token");
-
-    if (!token) {
-      throw new Error("No access token found. Please log in.");
-    }
-
-    const response = await api.get("assign_doctor/doctor/assign/list/", {
+    const response = await api.get("accounts/available-doctors-patient/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -1193,15 +1081,114 @@ export const CountDataSeniorDashboard = async () => {
     throw error;
   }
 };
+
+
+
+export const PatientAssessmentUpdate = async (id: number, responseText: string) => {
+  try {
+    const token = localStorage.getItem("access_token");
+    
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+
+    const response = await api.patch(`/thoughts/thoughts/update/${id}/`, 
+      {
+        response_text: responseText, // Send the updated response text
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error updating assessment:", error);
+    throw error;
+  }
+};
+export const Reappointment = async () => {
+  try {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      throw new Error("No access token found. Please log in.");
+    }
+
+    const response = await api.get("assign_doctor/doctor/assign/list/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching patient list:", error);
+    throw error;
+  }
+};
+
+export const DoctorCallvoxbay = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post(
+    "voxbay/click-to-call/",
+    formData,
+    {
+      headers,
+    }
+  );
+  const data = response;
+  console.log("data");
+  return response.data;
+};
+export const DoctorCallvoxbayCreat = async (
+  formData: any,
+  headers = {
+    "Content-Type": "application/json",
+  }
+) => {
+  const response = await api.post(
+    "voxbay/api/voxbay/create/",
+    formData,
+    {
+      headers,
+    }
+  );
+  const data = response;
+  console.log("data");
+  return response.data;
+};
 export const logout = () => {
+  // Clear all authentication and user-related data
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
   localStorage.removeItem("role");
   localStorage.removeItem("user_id");
   localStorage.removeItem("email");
-  localStorage.removeItem("phoneNo");
+  localStorage.removeItem("name");
   localStorage.removeItem("phoneNo");
   localStorage.removeItem("chat_section_id");
-  // Optional: clear everything
+  localStorage.removeItem("chat_messages");
+  localStorage.removeItem("ai_report_generated");
+  localStorage.removeItem("loginData");
+  localStorage.removeItem("first");
+  localStorage.removeItem("loginEmailId");
+  localStorage.removeItem("firsttime");
+
+  // Dispatch a storage event to notify all components
+  window.dispatchEvent(
+    new StorageEvent("storage", {
+      key: "access_token",
+      newValue: null,
+    })
+  );
   // localStorage.clear();
 };
+

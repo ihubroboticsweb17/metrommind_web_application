@@ -415,14 +415,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
             <div className="flex items-center space-x-6">
               {/* Main Navigation Links (if any, add them here) */}
               {/* For now, assuming links are only in mobile or dashboard */}
-              {email && (
-                <Link
-                  to={getDashboardLink()}
-                  className="text-gray-700 hover:text-teal-600 font-medium transition-colors duration-200 flex items-center gap-1"
-                >
-                  <LayoutDashboard className="h-5 w-5" /> Dashboard
-                </Link>
-              )}
+            
 
               {email ? (
                 <div className="relative" ref={dropdownRef}>
@@ -457,13 +450,7 @@ const Navbar = ({ onLearnMore }: NavbarProps) => {
                         </p>
                       </div>
                       <div className="px-4 py-2 space-y-1">
-                        <button
-                          onClick={handleDashboardClick}
-                          className="flex items-center gap-3 py-2 px-2 text-gray-700 hover:bg-gray-50 hover:text-teal-600 transition-colors duration-200 w-full text-left rounded-md"
-                        >
-                          <LayoutDashboard className="h-4 w-4" />
-                          <span>My Dashboard</span>
-                        </button>
+                       
                         <button
                           onClick={handleLogout}
                           className="flex items-center gap-3 py-2 px-2 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200 w-full text-left rounded-md"

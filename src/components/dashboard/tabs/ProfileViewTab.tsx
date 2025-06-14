@@ -259,11 +259,11 @@ export default function ProfileViewTab() {
 };
 
   return (
-    <div className="max-w-2xl mx-auto p-2 space-y-4 bg-gray-50 min-h-screen">
+    <div className="max-w-full mx-auto p-2 space-y-4 bg-gray-50 min-h-screen">
          <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
       {/* Header with improved styling */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-teal-100 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-full mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -378,10 +378,10 @@ export default function ProfileViewTab() {
                 <p className="text-sm text-gray-500">
                   {assessment.length}/500 characters
                 </p>
-                {successMsg && (
+                {successMsga && (
                   <p className="text-green-600 text-sm font-medium flex items-center gap-1">
                     <Check className="w-4 h-4" />
-                    {successMsg}
+                    {successMsga}
                   </p>
                 )}
               </div>
@@ -536,7 +536,15 @@ export default function ProfileViewTab() {
               Add Prescription
             </DialogTitle>
           </DialogHeader>
-          <MedicinesAddTab onSuccess={handleAddMedicineSuccess} />
+          {/* <MedicinesAddTab onSuccess={handleAddMedicineSuccess} 
+          /> */}
+           <MedicinesAddTab 
+      onSuccess={handleAddMedicineSuccess}
+      preSelectedPatient={{
+        id: patientData?.patient?.id?.toString() || patientData?.patient?.patient_id?.toString(),
+        name: patientData?.patient?.name || 'Unknown Patient'
+      }}
+    />
         </DialogContent>
       </Dialog>
       </div>
