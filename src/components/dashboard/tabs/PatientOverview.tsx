@@ -177,7 +177,7 @@ const PatientOverview = () => {
       } catch (err) {
         setError("No data found.");
         toast({
-          title: "Error",
+          title: "error",
           description: "Failed to load patient data.",
           variant: "destructive",
         });
@@ -256,13 +256,12 @@ const PatientOverview = () => {
       console.error("Failed to fetch slots:", err);
       setAvailableSlots([]);
       toast({
-        title: "Error",
-        description: "Failed to fetch available slots.",
+        title: "Slot Unavailable",
+        description: "Please select a different date or create a new slot.",
         variant: "destructive",
       });
     }
   };
-
 
   const handleAppointment = async () => {
     if (!selectedPatient || !assignedDoctor || !selectedDate || !selectedSlot) {
@@ -845,65 +844,28 @@ const PatientOverview = () => {
                           </h3>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <Badge className="bg-red-50 text-red-600 border border-red-200">
-                                ⚠️ High
-                              </Badge>
+                          
                               <p className="text-sm text-red-600">
-                                Suicide risk - {checkState?.suicidality_risk}
+                                Suicide risk :{" "}
+                                {checkState?.suicidality_severity_score}/5-<span className="text-black">"{checkState?.suicidality_risk}"</span>
                               </p>
                             </div>
+                            {/* <div className="flex items-center gap-2">
+                              {" "}
+                              <p className="text-sm text-red-600">
+                                {checkState?.suicidality_risk}
+                              </p>
+                            </div> */}
                             <div className="flex items-center gap-2">
-                              <Badge className="bg-yellow-50 text-yellow-700 border border-yellow-200">
-                                ⚠️ Medium
-                              </Badge>
+                            
                               <p className="text-sm text-yellow-700">
-                                Self-harm tendencies
+                                Severity:{checkState?.severity}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Badge className="bg-blue-50 text-blue-600 border border-blue-200">
-                                ⚠️ Low
-                              </Badge>
-                              <p className="text-sm text-blue-600">
-                                Substance abuse
-                              </p>
-                            </div>
+                         
                           </div>
                         </div>
-                        <div className="md:col-span-2 bg-white p-4 rounded-lg border shadow-sm">
-                          <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-semibold text-teal-800">
-                              Treatment Recommendations
-                            </h3>
-                            {/* <Button
-                              onClick={() => setAiReportDialogOpen(true)}
-                              variant="outline"
-                              className="border-teal-600 text-teal-600 hover:bg-teal-50"
-                            >
-                              View Full AI Report
-                            </Button> */}
-                          </div>
-                          <div className="space-y-2 text-sm text-gray-600">
-                            <p>
-                              <span className="font-medium">Therapy:</span>{" "}
-                              {/* Cognitive Behavioral Therapy (CBT) with a focus on
-                              depression and anxiety management. */}
-                              {checkState?.psychiatric_history}
-                            </p>
-                            <p>
-                              <span className="font-medium">Medication:</span>{" "}
-                              {/* Consider SSRI antidepressants under psychiatric
-                              supervision. */}
-                              {checkState?.medical_history}
-                            </p>
-                            <p>
-                              <span className="font-medium">Follow-up:</span>{" "}
-                              {/* Weekly sessions initially, with suicide risk
-                              assessment at each visit. */}
-                              {checkState?.substance_use}
-                            </p>
-                          </div>
-                        </div>
+                       
                         <div>
                           {/* <Button
                             onClick={handleChatEnable}

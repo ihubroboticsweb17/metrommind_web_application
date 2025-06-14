@@ -349,7 +349,7 @@ const BookingSlotList = () => {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Failed to fetch other slots",
+        title: "Failed to fetch other slot",
       });
     }
   };

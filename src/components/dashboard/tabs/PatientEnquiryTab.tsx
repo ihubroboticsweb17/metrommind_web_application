@@ -102,6 +102,7 @@ const PatientEnquiryTab = () => {
   const [isSecondAssessmentSubmitted, setIsSecondAssessmentSubmitted] = useState(false)
   const [secondAssessmentPdfUrl, setSecondAssessmentPdfUrl] = useState("")
   const [isApprovedSecond, setIsApprovedSecond] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [patientStates, setPatientStates] = useState<{
     [key: number]: PatientState
   }>({})
@@ -316,7 +317,7 @@ const PatientEnquiryTab = () => {
       })
       return
     }
-
+ setIsLoading(true); 
     try {
       const formData = {
         user_id: selectedPatient?.id,
@@ -353,6 +354,9 @@ const PatientEnquiryTab = () => {
         variant: "destructive",
       })
     }
+    finally {
+    setIsLoading(false); 
+  }
   }
 
   const handleReject = async (id: number) => {
@@ -845,8 +849,10 @@ const PatientEnquiryTab = () => {
             <Button variant="outline" onClick={() => setOpenSecondDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmitSecondTherapistNotes} className="bg-purple-600 hover:bg-purple-700">
-              Submit Secondary Assessment
+            <Button onClick={handleSubmitSecondTherapistNotes} 
+             disabled={isLoading}
+            className="bg-purple-600 hover:bg-purple-700">
+             {isLoading ? "Submitting..." : "Submit Secondary Assessment"}
             </Button>
           </DialogFooter>
         </DialogContent>
