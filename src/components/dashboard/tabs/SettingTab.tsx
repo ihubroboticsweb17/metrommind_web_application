@@ -62,7 +62,7 @@ const SettingTab = () => {
         </div>
       </Card>
 
-      {/* Preferences Grid */}
+      {/* Preferences Grid
       <div className="grid grid-cols-2 gap-4">
         <Card className="border p-4 rounded-lg shadow-sm">
           <h3 className="font-semibold text-teal-800  mb-2">
@@ -109,13 +109,13 @@ const SettingTab = () => {
           <p>Access Logs</p>
         </Card>
    
-      </div>
+      </div> */}
 
-      <div className="mt-6 text-center">
+      {/* <div className="mt-6 text-center">
         <button className="bg-teal-500 text-white border px-4 py-2 rounded  hover:bg-white  hover:text-black">
           Save Changes
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
